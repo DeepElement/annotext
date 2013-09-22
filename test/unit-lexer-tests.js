@@ -1,16 +1,19 @@
 'use strict';
 
 var should = require('should'),
-	uuid = require('uuid'),
-	async = require('async'),
-	samplesProvider = require('./samples/samples-provider'),
-	Lexer = require('../lib/lexer');
+uuid = require('uuid'),
+async = require('async'),
+samplesProvider = require('./samples/samples-provider'),
+Lexer = require('../lib/lexer');
 
 describe('AnnoText Lexer Unit tests', function() {
 	describe('lex', function() {
 		it('Standard space detection', function(done) {
 			var content = 'sample content';
-			var lexer = new Lexer();
+			var lexer = new Lexer({
+				user_placeholder : uuid.v4(),
+				revision_placeholder : uuid.v4()
+			});
 
 			var results = lexer.lex(content);
 
@@ -24,7 +27,10 @@ describe('AnnoText Lexer Unit tests', function() {
 
 		it('Leading/Trailing space detection', function(done) {
 			var content = ' sample content ';
-			var lexer = new Lexer();
+			var lexer = new Lexer({
+				user_placeholder : uuid.v4(),
+				revision_placeholder : uuid.v4()
+			});
 
 			var results = lexer.lex(content);
 
@@ -38,7 +44,10 @@ describe('AnnoText Lexer Unit tests', function() {
 
 		it('Leading/Trailing tab detection', function(done) {
 			var content = '\tsample\tcontent\t';
-			var lexer = new Lexer();
+			var lexer = new Lexer({
+				user_placeholder : uuid.v4(),
+				revision_placeholder : uuid.v4()
+			});
 
 			var results = lexer.lex(content);
 
@@ -52,7 +61,10 @@ describe('AnnoText Lexer Unit tests', function() {
 
 		it('Leading/Trailing new line detection', function(done) {
 			var content = '\nsample\ncontent\n';
-			var lexer = new Lexer();
+			var lexer = new Lexer({
+				user_placeholder : uuid.v4(),
+				revision_placeholder : uuid.v4()
+			});
 
 			var results = lexer.lex(content);
 
@@ -66,7 +78,10 @@ describe('AnnoText Lexer Unit tests', function() {
 
 		it('Leading/Trailing LF detection', function(done) {
 			var content = '\rsample\rcontent\r';
-			var lexer = new Lexer();
+			var lexer = new Lexer({
+				user_placeholder : uuid.v4(),
+				revision_placeholder : uuid.v4()
+			});
 
 			var results = lexer.lex(content);
 
