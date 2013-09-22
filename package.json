@@ -1,20 +1,23 @@
 {
   "author": "Todd Morrison",
-  "name": "annotext",
+  "name": "AnnoText",
   "private": false,
-  "description": "A attribution parser for text in NodeJS",
+  "description": "A attribution engine for NodeJS",
   "version": "0.0.1",
   "repository": {
     "url": "https://bitbucket.org/deepelement/annotext"
   },
-  "main": "./lib/main",
   "bin": {
     "annotext": "./bin/annotext"
   },
   "dependencies": {
-    "should" : "*"
-    },
-  "devDependencies": {},
+    "async": "*",
+    "uuid": "*",
+    "string" : "*"
+  },
+  "devDependencies": {
+    "should": "*"
+  },
   "optionalDependencies": {},
   "engines": {
     "node": "*"
