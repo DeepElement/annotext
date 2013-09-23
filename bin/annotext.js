@@ -1,19 +1,16 @@
 var Lexer = require('../lib/lexer.js');
 
 // Constructor
-
 function annotext(options) {
-	this.options = options || annotext.defaults;
+	this.options = options || {};
 }
 
 // class methods
-annotext.prototype.api = {};
-annotext.prototype.api.annotate = function(clear_text, user_key, revision_key) {
-	var lexer = new Lexer();
+annotext.prototype.annotate = function(clear_text, user_key, revision_key) {
+	var lexer = new Lexer(this.options);
 	var tokens = lexer.lex(clear_text);
-
-	
 };
+
 /*
 annotateDiff: function(existing_annotated_text,
 	updated_clear_text, user_key, revision_key) {

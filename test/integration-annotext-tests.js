@@ -35,10 +35,13 @@ describe('AnnoText Integration tests', function() {
 		it('large document', function(done) {
 			var user_key = uuid.v4();
 			var revision_key = uuid.v4();
-			var annotext_instance = new annotext();
+			var annotext_instance = new annotext({
+				user_placeholder: uuid.v4(),
+				revision_placeholder: uuid.v4()
+			});
 			for (var key in samples) {
 				var sample = samples[key];
-				annotext_instance.api.annotate(sample, user_key, revision_key);
+				annotext_instance.annotate(sample, user_key, revision_key);
 			}
 			done();
 		});
