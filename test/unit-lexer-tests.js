@@ -9,7 +9,7 @@ Lexer = require('../lib/lexer');
 describe('AnnoText Lexer Unit tests', function() {
 	describe('lex', function() {
 		it('Standard space detection', function(done) {
-			var content = 'sample content';
+			var content = 's c';
 			var lexer = new Lexer({
 				user_placeholder : uuid.v4(),
 				revision_placeholder : uuid.v4()
@@ -26,7 +26,7 @@ describe('AnnoText Lexer Unit tests', function() {
 		});
 
 		it('Leading/Trailing space detection', function(done) {
-			var content = ' sample content ';
+			var content = ' s c ';
 			var lexer = new Lexer({
 				user_placeholder : uuid.v4(),
 				revision_placeholder : uuid.v4()
@@ -43,7 +43,7 @@ describe('AnnoText Lexer Unit tests', function() {
 		});
 
 		it('Leading/Trailing tab detection', function(done) {
-			var content = '\tsample\tcontent\t';
+			var content = '\ts\tc\t';
 			var lexer = new Lexer({
 				user_placeholder : uuid.v4(),
 				revision_placeholder : uuid.v4()
@@ -60,7 +60,7 @@ describe('AnnoText Lexer Unit tests', function() {
 		});
 
 		it('Leading/Trailing new line detection', function(done) {
-			var content = '\nsample\ncontent\n';
+			var content = '\ns\nc\n';
 			var lexer = new Lexer({
 				user_placeholder : uuid.v4(),
 				revision_placeholder : uuid.v4()
@@ -77,7 +77,7 @@ describe('AnnoText Lexer Unit tests', function() {
 		});
 
 		it('Leading/Trailing LF detection', function(done) {
-			var content = '\rsample\rcontent\r';
+			var content = '\rs\rc\r';
 			var lexer = new Lexer({
 				user_placeholder : uuid.v4(),
 				revision_placeholder : uuid.v4()

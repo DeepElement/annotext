@@ -13,7 +13,10 @@
   "dependencies": {
     "async": "*",
     "uuid": "*",
-    "string" : "*"
+    "string": "*",
+    "yamljs": "*",
+    "moment": "*",
+    "googlediff": "*"
   },
   "devDependencies": {
     "should": "*"
