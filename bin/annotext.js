@@ -1,6 +1,7 @@
 var Lexer = require('../lib/lexer.js');
 
 // Constructor
+
 function annotext(options) {
 	this.options = options || {};
 }
@@ -9,6 +10,24 @@ function annotext(options) {
 annotext.prototype.annotate = function(clear_text, user_key, revision_key) {
 	var lexer = new Lexer(this.options);
 	var tokens = lexer.lex(clear_text);
+
+	var result = '';
+	var attribution_suffix = "{" + this.options.user_placeholder + ":{" + user_key + "}" + this.options.revision_placeholder + ":{" + revision_key + "}}";
+	tokens.forEach(function(token) {
+		switch (token.type) {
+			case 'attribution':
+				result += token.raw;
+				break;
+			case 'break':
+				result += token.raw + attribution_suffix;
+				break;
+			case 'text':
+				result += token.raw +
+					attribution_suffix;
+				break;
+		}
+	});
+	return result;
 };
 
 /*

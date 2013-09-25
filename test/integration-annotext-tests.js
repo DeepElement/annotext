@@ -41,7 +41,7 @@ describe('AnnoText Integration tests', function() {
 			});
 			for (var key in samples) {
 				var sample = samples[key];
-				annotext_instance.annotate(sample, user_key, revision_key);
+				var annotated_content = annotext_instance.annotate(sample, user_key, revision_key);
 			}
 			done();
 		});
