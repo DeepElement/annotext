@@ -1,11 +1,10 @@
 var Lexer = require('../lib/lexer'),
-	YAML = require('yamljs'),
-	fs = require('fs'),
-	moment = require('moment'),
-	diff_match_patch = require('googlediff');
+YAML = require('yamljs'),
+fs = require('fs'),
+moment = require('moment'),
+diff_match_patch = require('googlediff');
 
 var YAML_SEPERATOR = "---\n";
-
 
 // Constructor
 
@@ -82,14 +81,15 @@ annotext.prototype.diffAnnotate = function(updated_content, annotated_doc, key_v
 		var diff = diffs[i];
 		var lexer = new Lexer(this.options);
 		var diff_tokens = lexer.lex(diff[1]);
+
+
+
 		switch (diff[0]) {
 			case -1:
 				//console.log("TODO: remove");
-				diff_tokens.forEach(function(token) {
-					current_idx++;
-				});
-			case 0:
+				case 0:
 				//console.log("TODO: existing");
+				// TODO: conslidate based on REGEX for sequence
 				diff_tokens.forEach(function(token) {
 					var header_record = yaml_header.annotations[current_idx];
 					token_attributions.push({
@@ -99,10 +99,9 @@ annotext.prototype.diffAnnotate = function(updated_content, annotated_doc, key_v
 					current_idx++;
 				});
 				break;
-			case 1:
+				case 1:
 				//console.log("TODO: added");
 				diff_tokens.forEach(function(token) {
-
 					var nativeObject = {
 						annotations: [],
 						created: moment().toISOString()
@@ -116,24 +115,23 @@ annotext.prototype.diffAnnotate = function(updated_content, annotated_doc, key_v
 						token: token,
 						header: nativeObject
 					})
-					current_idx++;
 				});
 				break;
+			}
 		}
-	}
 
-	var native_refactored_header = {
-		annotations: [],
-		created: moment().toISOString()
-	};
-	for (var i = 0; i <= token_attributions.length - 1; i++) {
-		var ta = token_attributions[i];
-		ta.header.index = i;
-		native_refactored_header.annotations.push(ta.header);
-	}
+		var native_refactored_header = {
+			annotations: [],
+			created: moment().toISOString()
+		};
+		for (var i = 0; i <= token_attributions.length - 1; i++) {
+			var ta = token_attributions[i];
+			ta.header.index = i;
+			native_refactored_header.annotations.push(ta.header);
+		}
 
-	var compressed_header = compress_yaml_header(native_refactored_header);
-	var refactored_header = YAML.stringify(compressed_header);
+		var compressed_header = compress_yaml_header(native_refactored_header);
+		var refactored_header = YAML.stringify(compressed_header);
 
 	// construct document
 	var result = "";

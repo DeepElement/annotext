@@ -78,7 +78,7 @@ describe('AnnoText Integration tests', function() {
 				});
 		});
 
-		it('large document - add word', function(done) {
+		it('all docs - add word', function(done) {
 			var user_key = uuid.v4();
 			var revision_key = uuid.v4();
 			var annotext_instance = new annotext({
@@ -101,5 +101,35 @@ describe('AnnoText Integration tests', function() {
 			}
 			done();
 		});
+
+
+		it('all-docs - remove word', function(done) {
+			var user_key = uuid.v4();
+			var revision_key = uuid.v4();
+			var annotext_instance = new annotext({
+				user_placeholder: uuid.v4(),
+				revision_placeholder: uuid.v4()
+			});
+			for (var key in samples) {
+				var sample = samples[key];
+				var textAnnotateDoc = annotext_instance.createTextAnnotateDocument(sample, {
+					user: user_key,
+					revision: revision_key
+				});
+				should.exist(textAnnotateDoc);
+
+
+				var upper = 5; //sample.length-1;
+				for (var i = 0; i <= upper; i++) {
+					// alter source
+					var updated_doc = annotext_instance.diffAnnotate(
+						sample.substr(0, i) + sample.substr(i+1, sample.length),
+						textAnnotateDoc);
+					should.exist(updated_doc);
+				}
+			}
+			done();
+		});
+
 	});
 });
