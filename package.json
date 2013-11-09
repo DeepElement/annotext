@@ -3,7 +3,7 @@
   "name": "annotext",
   "private": false,
   "description": "A attribution engine for NodeJS",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "url": "https://bitbucket.org/deepelement/annotext"
     },
