@@ -1,8 +1,8 @@
 var Lexer = require('../lib/lexer'),
-	YAML = require('yamljs'),
-	fs = require('fs'),
-	moment = require('moment'),
-	diff_match_patch = require('googlediff');
+YAML = require('yamljs'),
+fs = require('fs'),
+moment = require('moment'),
+diff_match_patch = require('googlediff');
 
 var YAML_SEPERATOR = "---\n";
 
@@ -13,8 +13,20 @@ var annotext = function(options) {
 }
 
 // class methods
+annotext.prototype.getRevisionsByUser = function(annotextDoc, userKey) {
+	var doc = _devify(annotextDoc);
+	var results = [];
+	doc.header.annotations.forEach(function(a) {
+		if (a['user'] == userKey)
+			results.push(a);
+	});
+	results.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
+	return results;
+}
+
 annotext.prototype.getDistinctRevisions = function(annotextDoc, expanded) {
 	var doc = _devify(annotextDoc, expanded);
+	doc.header.annotations.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
 	return doc.header.annotations;
 }
 
@@ -25,6 +37,7 @@ annotext.prototype.getDistinctUserKeys = function(annotextDoc) {
 		if (results.indexOf(a['user']) == -1)
 			results.push(a['user']);
 	});
+	results.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
 	return results;
 }
 
@@ -35,11 +48,23 @@ annotext.prototype.getDistinctRevisionKeys = function(annotextDoc) {
 		if (results.indexOf(a['revision']) == -1)
 			results.push(a['revision']);
 	});
+	results.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
+	return results;
+}
+
+annotext.prototype.getDistinctRevisionDates = function(annotextDoc) {
+	var doc = _devify(annotextDoc);
+	var results = [];
+	doc.header.annotations.forEach(function(a) {
+		if (results.indexOf(a['created']) == -1)
+			results.push(a['created']);
+	});
+	results.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
 	return results;
 }
 
 // CREATE
-annotext.prototype.create = function(content, key_values) {
+annotext.prototype.create = function(content, userKey, revisionKey) {
 	var result = "";
 
 	// tokenize
@@ -56,7 +81,7 @@ annotext.prototype.create = function(content, key_values) {
 		range_start: tokens[0].index,
 		range_end: tokens[tokens.length - 1].index,
 		created: moment().toISOString(),
-		user: userkey,
+		user: userKey,
 		revision: revisionKey
 	};
 	nativeObject.annotations.push(token_native);
@@ -75,7 +100,7 @@ annotext.prototype.create = function(content, key_values) {
 };
 
 // UPDATE
-annotext.prototype.update = function(newContent, annotextDoc, userkey, revisionKey) {
+annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionKey) {
 	var header = "";
 	var doc = _devify(annotextDoc, true);
 
@@ -106,23 +131,20 @@ annotext.prototype.update = function(newContent, annotextDoc, userkey, revisionK
 				});
 				break;
 			case 1: // Adding
-				diff_tokens.forEach(function(token) {
-					var nativeObject = {
-						annotations: [],
-						created: moment().toISOString()
-					};
-					var token_native = {
-						user: userkey,
-						revision: revisionKey,
-						created: moment().toISOString()
-					};
+			diff_tokens.forEach(function(token) {
+				var token_native = {
+					index: tokens[0].index,
+					created: moment().toISOString(),
+					user: userKey,
+					revision: revisionKey
+				};
 
-					token_attributions.push({
-						token: token,
-						header: nativeObject
-					})
-				});
-				break;
+				token_attributions.push({
+					token: token,
+					header: token_native
+				})
+			});
+			break;
 		}
 	}
 
@@ -137,6 +159,7 @@ annotext.prototype.update = function(newContent, annotextDoc, userkey, revisionK
 	}
 
 	var compressed_header = compress_yaml_header(native_refactored_header);
+
 	var refactored_header = YAML.stringify(compressed_header);
 
 	// construct document
@@ -187,12 +210,14 @@ function compress_yaml_header(header) {
 	while (p <= header.annotations.length - 1) {
 		var last_index = p;
 		while (last_index <= header.annotations.length - 1) {
-			if (are_keys_equal(header.annotations[p], header.annotations[last_index])) {
+			if (header.annotations[p]['user']== 
+				header.annotations[last_index]['user']) {
 				last_index++;
 			} else {
 				break;
 			}
 		}
+		console.log(last_index);
 		var token_native = {};
 		for (var key in header.annotations[p]) {
 			if (key != 'index')
