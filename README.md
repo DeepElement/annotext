@@ -184,6 +184,12 @@ Revisions contain
 	// returns array of revisions
 	var revisions = annotextDocumentProcessor.getDistinctRevisions(annoTextDoc)
 
+#Contact & Issues
+
+Issues: (https://github.com/toddmorrison/AnnoText)[https://github.com/toddmorrison/AnnoText/issues]
+
+or,<todd@deepelement.com>
+
 ## License
 
 (The MIT License)
