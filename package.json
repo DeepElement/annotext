@@ -5,7 +5,7 @@
   "description": "A attribution engine for NodeJS",
   "version": "0.2.0",
   "repository": {
-    "url": "https://github.com/toddmorrison/AnnoText.git"
+    "url": "https://github.com/DeepElement/AnnoText/issues"
     },
     "bin": {
       "annotext": "./bin/annotext.js"
