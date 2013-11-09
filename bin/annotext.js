@@ -8,7 +8,7 @@ var YAML_SEPERATOR = "---\n";
 
 // Constructor
 
-function annotext(options) {
+var annotext = function(options) {
 	this.options = options || {};
 }
 

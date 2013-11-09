@@ -16,7 +16,7 @@
         "uuid": "*",
         "string": "*",
         "yamljs": "*",
-        "moment": "*",
+        "moment" : "2.4.0",
         "googlediff": "*"
         },
         "devDependencies": {
