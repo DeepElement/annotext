@@ -1,8 +1,8 @@
 var Lexer = require('../lib/lexer'),
-YAML = require('yamljs'),
-fs = require('fs'),
-moment = require('moment'),
-diff_match_patch = require('googlediff');
+	YAML = require('yamljs'),
+	fs = require('fs'),
+	moment = require('moment'),
+	diff_match_patch = require('googlediff');
 
 var YAML_SEPERATOR = "---\n";
 
@@ -13,9 +13,29 @@ var annotext = function(options) {
 }
 
 // class methods
-annotext.prototype.extractRevisions = function(annotextDoc) {
-	var doc = _devify(annotextDoc);
+annotext.prototype.getDistinctRevisions = function(annotextDoc, expanded) {
+	var doc = _devify(annotextDoc, expanded);
 	return doc.header.annotations;
+}
+
+annotext.prototype.getDistinctUserKeys = function(annotextDoc) {
+	var doc = _devify(annotextDoc);
+	var results = [];
+	doc.header.annotations.forEach(function(a) {
+		if (results.indexOf(a['user']) == -1)
+			results.push(a['user']);
+	});
+	return results;
+}
+
+annotext.prototype.getDistinctRevisionKeys = function(annotextDoc) {
+	var doc = _devify(annotextDoc);
+	var results = [];
+	doc.header.annotations.forEach(function(a) {
+		if (results.indexOf(a['revision']) == -1)
+			results.push(a['revision']);
+	});
+	return results;
 }
 
 // CREATE
@@ -31,13 +51,14 @@ annotext.prototype.create = function(content, key_values) {
 		annotations: [],
 		created: moment().toISOString()
 	};
+
 	var token_native = {
 		range_start: tokens[0].index,
-		range_end: tokens[tokens.length - 1].index
+		range_end: tokens[tokens.length - 1].index,
+		created: moment().toISOString(),
+		user: userkey,
+		revision: revisionKey
 	};
-	for (var key in key_values) {
-		token_native[key] = key_values[key];
-	}
 	nativeObject.annotations.push(token_native);
 
 	// convert json header to YAML
@@ -54,29 +75,15 @@ annotext.prototype.create = function(content, key_values) {
 };
 
 // UPDATE
-annotext.prototype.update = function(updated_content, annotated_doc, key_values) {
+annotext.prototype.update = function(newContent, annotextDoc, userkey, revisionKey) {
 	var header = "";
-
-	var start_seperator_idx = annotated_doc.indexOf(YAML_SEPERATOR);
-	var end_seperator_idx = annotated_doc.indexOf(YAML_SEPERATOR, start_seperator_idx + 1);
-
-	var header = annotated_doc.substr(YAML_SEPERATOR.length,
-		end_seperator_idx - YAML_SEPERATOR.length);
-	var content = annotated_doc.substr(header.length + 2 * YAML_SEPERATOR.length,
-		annotated_doc.length);
-
-	var yaml_header;
-	try {
-		yaml_header = expand_yaml_header(YAML.parse(header));
-	} catch (ex) {
-		console.log(ex);
-	}
+	var doc = _devify(annotextDoc, true);
 
 	var lexer = new Lexer(this.options);
-	var tokens = lexer.lex(content);
+	var tokens = lexer.lex(doc.content);
 
 	var dmp = new diff_match_patch();
-	var diffs = dmp.diff_main(content, updated_content);
+	var diffs = dmp.diff_main(doc.content, newContent);
 
 	var current_idx = 0;
 	var token_attributions = [];
@@ -90,7 +97,7 @@ annotext.prototype.update = function(updated_content, annotated_doc, key_values)
 			case 0: // Stays the Same
 				// TODO: conslidate based on REGEX for sequence
 				diff_tokens.forEach(function(token) {
-					var header_record = yaml_header.annotations[current_idx];
+					var header_record = doc.header.annotations[current_idx];
 					token_attributions.push({
 						token: token,
 						header: header_record
@@ -99,22 +106,23 @@ annotext.prototype.update = function(updated_content, annotated_doc, key_values)
 				});
 				break;
 			case 1: // Adding
-			diff_tokens.forEach(function(token) {
-				var nativeObject = {
-					annotations: [],
-					created: moment().toISOString()
-				};
-				var token_native = {};
-				for (var key in key_values) {
-					token_native[key] = key_values[key];
-				}
+				diff_tokens.forEach(function(token) {
+					var nativeObject = {
+						annotations: [],
+						created: moment().toISOString()
+					};
+					var token_native = {
+						user: userkey,
+						revision: revisionKey,
+						created: moment().toISOString()
+					};
 
-				token_attributions.push({
-					token: token,
-					header: nativeObject
-				})
-			});
-			break;
+					token_attributions.push({
+						token: token,
+						header: nativeObject
+					})
+				});
+				break;
 		}
 	}
 
@@ -136,13 +144,12 @@ annotext.prototype.update = function(updated_content, annotated_doc, key_values)
 	result += YAML_SEPERATOR;
 	result += refactored_header;
 	result += YAML_SEPERATOR;
-	result += updated_content;
+	result += newContent;
 
 	return result;
 };
 
-function _devify(annotextDoc, expandHeader)
-{
+function _devify(annotextDoc, expandHeader) {
 	var header = "";
 
 	var start_seperator_idx = annotextDoc.indexOf(YAML_SEPERATOR);
@@ -156,18 +163,17 @@ function _devify(annotextDoc, expandHeader)
 	var yaml_header;
 	try {
 		yaml_header = YAML.parse(header);
-		if(expandHeader)
-		{
-			yaml_header = expandHeader(yaml_header);
+		if (expandHeader) {
+			yaml_header = expand_yaml_header(yaml_header);
 		}
 	} catch (ex) {
 		console.log(ex);
 	}
 
 	return {
-		content : content,
-		header : yaml_header
-	};	
+		content: content,
+		header: yaml_header
+	};
 }
 
 function compress_yaml_header(header) {
