@@ -97,6 +97,24 @@ Update an existing document with the changed content.
 				'v0.2');
 
 
+##Parse
+Parse an existing document and get a pretty "ok" api for accessing header/content.
+
+**Usage**
+
+	var annotext = require('annotext');
+	var annotextDocumentProcessor = new annotext();
+	
+	// create a basic document
+	var annoTextDoc = annotextDocumentProcessor.create(
+					'Here is some sample content',
+					'toddpi314', 
+					'v0.1');
+					
+	var parsedDoc = annotextDocumentProcessor.parse(annoTextDoc);
+
+
+
 ##GetRevisionsByUser
 Get a list of revisions based on the user key used in prior attribution entries.
 

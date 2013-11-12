@@ -1,8 +1,8 @@
 var Lexer = require('../lib/lexer'),
-YAML = require('yamljs'),
-fs = require('fs'),
-moment = require('moment'),
-diff_match_patch = require('googlediff');
+	YAML = require('yamljs'),
+	fs = require('fs'),
+	moment = require('moment'),
+	diff_match_patch = require('googlediff');
 
 var YAML_SEPERATOR = "---\n";
 
@@ -14,53 +14,90 @@ var annotext = function(options) {
 
 // class methods
 annotext.prototype.getRevisionsByUser = function(annotextDoc, userKey) {
-	var doc = _devify(annotextDoc);
+	var doc = annotext.prototype.parse(annotextDoc);
 	var results = [];
 	doc.header.annotations.forEach(function(a) {
 		if (a['user'] == userKey)
 			results.push(a);
 	});
-	results.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
+	results.sort(function(a, b) {
+		return moment(a['created']).diff(moment(b['created']));
+	});
 	return results;
 }
 
 annotext.prototype.getDistinctRevisions = function(annotextDoc, expanded) {
-	var doc = _devify(annotextDoc, expanded);
-	doc.header.annotations.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
+	var doc = annotext.prototype.parse(annotextDoc, expanded);
+	doc.header.annotations.sort(function(a, b) {
+		return moment(a['created']).diff(moment(b['created']));
+	});
 	return doc.header.annotations;
 }
 
 annotext.prototype.getDistinctUserKeys = function(annotextDoc) {
-	var doc = _devify(annotextDoc);
+	var doc = annotext.prototype.parse(annotextDoc);
 	var results = [];
 	doc.header.annotations.forEach(function(a) {
 		if (results.indexOf(a['user']) == -1)
 			results.push(a['user']);
 	});
-	results.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
+	results.sort(function(a, b) {
+		return moment(a['created']).diff(moment(b['created']));
+	});
 	return results;
 }
 
 annotext.prototype.getDistinctRevisionKeys = function(annotextDoc) {
-	var doc = _devify(annotextDoc);
+	var doc = annotext.prototype.parse(annotextDoc);
 	var results = [];
 	doc.header.annotations.forEach(function(a) {
 		if (results.indexOf(a['revision']) == -1)
 			results.push(a['revision']);
 	});
-	results.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
+	results.sort(function(a, b) {
+		return moment(a['created']).diff(moment(b['created']));
+	});
 	return results;
 }
 
 annotext.prototype.getDistinctRevisionDates = function(annotextDoc) {
-	var doc = _devify(annotextDoc);
+	var doc = annotext.prototype.parse(annotextDoc);
 	var results = [];
 	doc.header.annotations.forEach(function(a) {
 		if (results.indexOf(a['created']) == -1)
 			results.push(a['created']);
 	});
-	results.sort(function(a,b) {return moment(a['created']).diff(moment(b['created']));});
+	results.sort(function(a, b) {
+		return moment(a['created']).diff(moment(b['created']));
+	});
 	return results;
+}
+
+annotext.prototype.parse = function(annotextDoc, expandHeader) {
+	var header = "";
+
+	var start_seperator_idx = annotextDoc.indexOf(YAML_SEPERATOR);
+	var end_seperator_idx = annotextDoc.indexOf(YAML_SEPERATOR, start_seperator_idx + 1);
+
+	var header = annotextDoc.substr(YAML_SEPERATOR.length,
+		end_seperator_idx - YAML_SEPERATOR.length);
+	var content = annotextDoc.substr(header.length + 2 * YAML_SEPERATOR.length,
+		annotextDoc.length);
+
+	var yaml_header;
+	try {
+		yaml_header = YAML.parse(header);
+		if (expandHeader) {
+			yaml_header = expand_yaml_header(yaml_header);
+		}
+	} catch (ex) {
+		console.log(ex);
+	}
+
+	return {
+		content: content,
+		header: yaml_header
+	};
 }
 
 // CREATE
@@ -102,7 +139,7 @@ annotext.prototype.create = function(content, userKey, revisionKey) {
 // UPDATE
 annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionKey) {
 	var header = "";
-	var doc = _devify(annotextDoc, true);
+	var doc = exports.parse(annotextDoc, true);
 
 	var lexer = new Lexer(this.options);
 	var tokens = lexer.lex(doc.content);
@@ -131,20 +168,20 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 				});
 				break;
 			case 1: // Adding
-			diff_tokens.forEach(function(token) {
-				var token_native = {
-					index: tokens[0].index,
-					created: moment().toISOString(),
-					user: userKey,
-					revision: revisionKey
-				};
+				diff_tokens.forEach(function(token) {
+					var token_native = {
+						index: tokens[0].index,
+						created: moment().toISOString(),
+						user: userKey,
+						revision: revisionKey
+					};
 
-				token_attributions.push({
-					token: token,
-					header: token_native
-				})
-			});
-			break;
+					token_attributions.push({
+						token: token,
+						header: token_native
+					})
+				});
+				break;
 		}
 	}
 
@@ -172,32 +209,6 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	return result;
 };
 
-function _devify(annotextDoc, expandHeader) {
-	var header = "";
-
-	var start_seperator_idx = annotextDoc.indexOf(YAML_SEPERATOR);
-	var end_seperator_idx = annotextDoc.indexOf(YAML_SEPERATOR, start_seperator_idx + 1);
-
-	var header = annotextDoc.substr(YAML_SEPERATOR.length,
-		end_seperator_idx - YAML_SEPERATOR.length);
-	var content = annotextDoc.substr(header.length + 2 * YAML_SEPERATOR.length,
-		annotextDoc.length);
-
-	var yaml_header;
-	try {
-		yaml_header = YAML.parse(header);
-		if (expandHeader) {
-			yaml_header = expand_yaml_header(yaml_header);
-		}
-	} catch (ex) {
-		console.log(ex);
-	}
-
-	return {
-		content: content,
-		header: yaml_header
-	};
-}
 
 function compress_yaml_header(header) {
 	var start = moment();
@@ -210,7 +221,7 @@ function compress_yaml_header(header) {
 	while (p <= header.annotations.length - 1) {
 		var last_index = p;
 		while (last_index <= header.annotations.length - 1) {
-			if (header.annotations[p]['user']== 
+			if (header.annotations[p]['user'] ==
 				header.annotations[last_index]['user']) {
 				last_index++;
 			} else {
