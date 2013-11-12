@@ -1,4 +1,4 @@
-#AnnoText - v0.1
+#AnnoText
 
   A document-based attribution engine for [node](http://nodejs.org).
 
