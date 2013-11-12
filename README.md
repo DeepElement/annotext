@@ -186,7 +186,7 @@ Revisions contain
 
 #Contact & Issues
 
-Issues: (https://github.com/toddmorrison/AnnoText)[https://github.com/toddmorrison/AnnoText/issues]
+Issues: https://github.com/DeepElement/AnnoText/issues
 
 or,<todd@deepelement.com>
 
