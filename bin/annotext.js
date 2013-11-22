@@ -139,7 +139,7 @@ annotext.prototype.create = function(content, userKey, revisionKey) {
 // UPDATE
 annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionKey) {
 	var header = "";
-	var doc = exports.parse(annotextDoc, true);
+	var doc = annotext.prototype.parse(annotextDoc, true);
 
 	var lexer = new Lexer(this.options);
 	var tokens = lexer.lex(doc.content);
@@ -228,7 +228,6 @@ function compress_yaml_header(header) {
 				break;
 			}
 		}
-		console.log(last_index);
 		var token_native = {};
 		for (var key in header.annotations[p]) {
 			if (key != 'index')
