@@ -7,7 +7,6 @@ var Lexer = require('../lib/lexer'),
 var YAML_SEPERATOR = "---\n";
 
 // Constructor
-
 var annotext = function(options) {
 	this.options = options || {};
 }
