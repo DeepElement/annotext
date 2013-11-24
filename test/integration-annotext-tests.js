@@ -2,11 +2,14 @@ var should = require('should'),
 uuid = require('uuid'),
 async = require('async'),
 samplesProvider = require('./samples/samples-provider'),
-annotext = require('../bin/annotext');
+annotext = require('../bin/annotext'),
+diff_match_patch = require('googlediff');
 
 describe('AnnoText Integration tests', function() {
-	describe('api.getRevisionsByUser', function() {
+
+	describe('api.updateByDiffMatchPatches', function() {
 		var samples = {}
+
 		beforeEach(function(done) {
 			samplesProvider.getAllSampleFileNames(
 				function(err, resp) {
@@ -28,22 +31,104 @@ describe('AnnoText Integration tests', function() {
 				});
 		});
 
-		it('large document', function(done) {
+		it('all docs - add word', function(done) {
 			var user_key = uuid.v4();
 			var revision_key = uuid.v4();
-			var annotext_instance = new annotext();
+			var annotext_instance = new annotext({
+				user_placeholder: uuid.v4(),
+				revision_placeholder: uuid.v4()
+			});
+			var dmp = new diff_match_patch();
+
 			for (var key in samples) {
 				var sample = samples[key];
 				var textAnnotateDoc = annotext_instance.create(sample,
 					user_key, revision_key);
 
-				var results = annotext_instance.getRevisionsByUser(textAnnotateDoc, user_key);
-				should.exist(results);
-				results.length.should.equal(1);
+				should.exist(textAnnotateDoc);
+
+				var patches = dmp.patch_make(sample, sample + "new-word");
+				var updated_doc = annotext_instance.updateByDiffMatchPatches(
+					patches,
+					textAnnotateDoc,
+					user_key,
+					revision_key);
+				should.exist(updated_doc);
 			}
 			done();
 		});
+
+		it('all-docs - remove word', function(done) {
+			var user_key = uuid.v4();
+			var revision_key = uuid.v4();
+			var annotext_instance = new annotext({
+				user_placeholder: uuid.v4(),
+				revision_placeholder: uuid.v4()
+			});
+			var dmp = new diff_match_patch();
+			for (var key in samples) {
+				var sample = samples[key];
+				var textAnnotateDoc = annotext_instance.create(sample,
+					user_key, revision_key);
+				should.exist(textAnnotateDoc);
+
+
+				var upper = 5; //sample.length-1;
+				for (var i = 0; i <= upper; i++) {
+					// alter source
+					var patches = dmp.patch_make(sample, sample.substr(0, i) + sample.substr(i + 1, sample.length));
+					var updated_doc = annotext_instance.updateByDiffMatchPatches(
+						patches,
+						textAnnotateDoc, user_key, revision_key);
+					should.exist(updated_doc);
+				}
+			}
+			done();
+		});
+
 	});
+
+
+
+describe('api.getRevisionsByUser', function() {
+	var samples = {}
+	beforeEach(function(done) {
+		samplesProvider.getAllSampleFileNames(
+			function(err, resp) {
+				async.each(resp,
+					function(item, item_callback) {
+						samplesProvider.getSampleContent({
+							filepath: item
+						},
+						function(content_err, content) {
+							should.not.exist(content_err);
+							samples[item] = content;
+							item_callback();
+						});
+					},
+					function(err) {
+						should.not.exist(err);
+						done();
+					});
+			});
+	});
+
+	it('large document', function(done) {
+		var user_key = uuid.v4();
+		var revision_key = uuid.v4();
+		var annotext_instance = new annotext();
+		for (var key in samples) {
+			var sample = samples[key];
+			var textAnnotateDoc = annotext_instance.create(sample,
+				user_key, revision_key);
+
+			var results = annotext_instance.getRevisionsByUser(textAnnotateDoc, user_key);
+			should.exist(results);
+			results.length.should.equal(1);
+		}
+		done();
+	});
+});
 
 describe('api.getDistinctRevisionDates', function() {
 	var samples = {}
