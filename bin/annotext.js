@@ -195,7 +195,6 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	}
 
 	var compressed_header = compress_yaml_header(native_refactored_header);
-
 	var refactored_header = YAML.stringify(compressed_header);
 
 	// construct document
