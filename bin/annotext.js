@@ -1,8 +1,8 @@
 var Lexer = require('../lib/lexer'),
-YAML = require('yamljs'),
-fs = require('fs'),
-moment = require('moment'),
-diff_match_patch = require('googlediff');
+	YAML = require('yamljs'),
+	fs = require('fs'),
+	moment = require('moment'),
+	diff_match_patch = require('googlediff');
 
 var YAML_SEPERATOR = "---\n";
 
@@ -167,20 +167,20 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 				});
 				break;
 			case 1: // Adding
-			diff_tokens.forEach(function(token) {
-				var token_native = {
-					index: tokens[0].index,
-					created: moment().toISOString(),
-					user: userKey,
-					revision: revisionKey
-				};
+				diff_tokens.forEach(function(token) {
+					var token_native = {
+						index: tokens[0].index,
+						created: moment().toISOString(),
+						user: userKey,
+						revision: revisionKey
+					};
 
-				token_attributions.push({
-					token: token,
-					header: token_native
-				})
-			});
-			break;
+					token_attributions.push({
+						token: token,
+						header: token_native
+					})
+				});
+				break;
 		}
 	}
 
@@ -212,7 +212,7 @@ annotext.prototype.updateByDiffMatchPatches = function(diffMatchPatches, annotex
 	var dmp = new diff_match_patch();
 
 	var patchedContentContext = dmp.patch_apply(diffMatchPatches, doc.content);
-	return annotext.prototype.update(patchedContentContext[0], 
+	return annotext.prototype.update(patchedContentContext[0],
 		annotextDoc,
 		userKey,
 		revisionKey);
@@ -230,27 +230,29 @@ function compress_yaml_header(header) {
 		var last_index = p;
 		while (last_index <= header.annotations.length - 1) {
 			if (header.annotations[p]['user'] ==
-				header.annotations[last_index]['user']) {
+				header.annotations[last_index]['user'] &&
+				header.annotations[p]['created'] ==
+				header.annotations[last_index]['created'] ) {
 				last_index++;
-		} else {
-			break;
+			} else {
+				break;
+			}
 		}
+		var token_native = {};
+		for (var key in header.annotations[p]) {
+			if (key != 'index')
+				token_native[key] = header.annotations[p][key];
+		}
+		new_header.annotations.push(token_native);
+		if (p != last_index) {
+			token_native.range_start = p;
+			token_native.range_end = last_index;
+		} else {
+			token_native.index = p;
+		}
+		p = last_index + 1;
 	}
-	var token_native = {};
-	for (var key in header.annotations[p]) {
-		if (key != 'index')
-			token_native[key] = header.annotations[p][key];
-	}
-	new_header.annotations.push(token_native);
-	if (p != last_index) {
-		token_native.range_start = p;
-		token_native.range_end = last_index;
-	} else {
-		token_native.index = p;
-	}
-	p = last_index + 1;
-}
-return new_header;
+	return new_header;
 }
 
 function are_keys_equal(left, right) {
