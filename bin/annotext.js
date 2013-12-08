@@ -227,30 +227,37 @@ function compress_yaml_header(header) {
 
 	var p = 0;
 	while (p <= header.annotations.length - 1) {
-		var last_index = p;
-		while (last_index <= header.annotations.length - 1) {
-			if (header.annotations[p]['user'] ==
-				header.annotations[last_index]['user'] &&
-				header.annotations[p]['created'] ==
-				header.annotations[last_index]['created'] ) {
-				last_index++;
+		var base_range = p;
+		var end_range = base_range;
+		for (var i = p; i <= header.annotations.length - 1; i++) {
+			if (header.annotations[i]['user'] ==
+				header.annotations[base_range]['user'] &&
+				header.annotations[i]['created'] ==
+				header.annotations[base_range]['created'] &&
+				header.annotations[i]['revision'] ==
+				header.annotations[base_range]['revision']) {
+				end_range = i;
 			} else {
 				break;
 			}
 		}
+
 		var token_native = {};
-		for (var key in header.annotations[p]) {
+		for (var key in header.annotations[base_range]) {
 			if (key != 'index')
-				token_native[key] = header.annotations[p][key];
+				token_native[key] = header.annotations[base_range][key];
+		}
+		if (base_range == end_range) {
+			// single record
+			token_native.index = base_range;
+		} else {
+			// range record
+			token_native.range_start = base_range;
+			token_native.range_end = end_range;
 		}
 		new_header.annotations.push(token_native);
-		if (p != last_index) {
-			token_native.range_start = p;
-			token_native.range_end = last_index;
-		} else {
-			token_native.index = p;
-		}
-		p = last_index + 1;
+
+		p = end_range + 1;
 	}
 	return new_header;
 }
