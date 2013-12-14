@@ -8,6 +8,34 @@ samplesProvider = require('./samples/samples-provider'),
 annotext = require('../bin/annotext'),
 diff_match_patch = require('googlediff');
 
+
+var reconstructContentFromHeader = function(parsed){
+	parsed.header.annotations.sort(function(a, b) {
+		var leftProp;
+		var rightProp;
+
+		var test = function(val){
+			if(val.index != null)
+				return val.index;
+			if(val.range_start != null)
+				return val.range_start;
+		};
+
+		return test(a) - test(b);
+	});
+	var reconstructedContent = "";
+	parsed.header.annotations.forEach(function(rev){
+		if(rev.index != null){
+			reconstructedContent+= parsed.content[rev.index];
+		}
+		else{
+			reconstructedContent+= parsed.content.substr(rev.range_start, rev.range_end - rev.range_start + 1);
+		}
+	});
+
+	reconstructedContent.should.equal(parsed.content);
+}
+
 describe('AnnoText Unit tests', function() {
 	describe('api.update', function() {
 		it('revision indexes correct', function(done) {
@@ -36,6 +64,8 @@ describe('AnnoText Unit tests', function() {
 
 			should.exist(parsed.header.annotations);
 			parsed.header.annotations.length.should.equal(2);
+
+			reconstructContentFromHeader(parsed);
 
 			done();
 		});
@@ -68,6 +98,8 @@ describe('AnnoText Unit tests', function() {
 			should.exist(parsed.header.annotations);
 			parsed.header.annotations.length.should.equal(2);
 
+			reconstructContentFromHeader(parsed);
+
 			done();
 		});
 
@@ -94,6 +126,8 @@ describe('api.create', function() {
 		parsedDoc.header.annotations.length.should.equal(1);
 		parsedDoc.header.annotations[0].range_start.should.equal(0);
 		parsedDoc.header.annotations[0].range_end.should.equal(3);
+
+		reconstructContentFromHeader(parsedDoc);
 
 		done();
 	});
@@ -128,6 +162,8 @@ describe('api.updateByDiffMatchPatches', function() {
 		var parsed = annotext_instance.parse(updated_doc);
 		parsed.content.should.equal(updatedContent);
 
+		reconstructContentFromHeader(parsed);
+
 		done();
 	});
 
@@ -158,6 +194,41 @@ describe('api.updateByDiffMatchPatches', function() {
 
 		var parsed = annotext_instance.parse(updated_doc);
 		parsed.content.should.equal(updatedContent);
+
+		reconstructContentFromHeader(parsed);
+
+		done();
+	});
+
+	it('remove word - complex use-case', function(done) {
+		var user_key = uuid.v4();
+		var revision_key = uuid.v4();
+		var annotext_instance = new annotext({
+			user_placeholder: uuid.v4(),
+			revision_placeholder: uuid.v4()
+		});
+		var dmp = new diff_match_patch();
+
+		var sampleContent = "some crazy \n sample content \n";
+		var updatedContent = "a\na\na\na\na";
+
+		var textAnnotateDoc = annotext_instance.create(sampleContent,
+			user_key, revision_key);
+
+		should.exist(textAnnotateDoc);
+
+		var patches = dmp.patch_make(sampleContent, updatedContent);
+		var updated_doc = annotext_instance.updateByDiffMatchPatches(
+			patches,
+			textAnnotateDoc,
+			user_key,
+			revision_key);
+		should.exist(updated_doc);
+
+		var parsed = annotext_instance.parse(updated_doc);
+		parsed.content.should.equal(updatedContent);
+
+		reconstructContentFromHeader(parsed);
 
 		done();
 	});
@@ -215,6 +286,8 @@ describe('parse', function() {
 			should.exist(parseContext.header.annotations);
 			should.exist(parseContext.header.created);
 			should.exist(parseContext.content);
+
+			reconstructContentFromHeader(parseContext);
 
 			done();
 		});

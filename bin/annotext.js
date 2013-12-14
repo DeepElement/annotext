@@ -150,11 +150,14 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	var token_attributions = [];
 	for (var i = 0; i <= diffs.length - 1; i++) {
 		var diff = diffs[i];
+
 		var lexer = new Lexer(this.options);
 		var diff_tokens = lexer.lex(diff[1]);
 
 		switch (diff[0]) {
 			case -1: // Removing
+				current_idx += diff_tokens.length;
+				break;
 			case 0: // Stays the Same
 				// TODO: conslidate based on REGEX for sequence
 				diff_tokens.forEach(function(token) {
@@ -167,6 +170,7 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 				});
 				break;
 			case 1: // Adding
+
 				diff_tokens.forEach(function(token) {
 					var token_native = {
 						index: tokens[0].index,
@@ -195,6 +199,7 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	}
 
 	var compressed_header = compress_yaml_header(native_refactored_header);
+
 	var refactored_header = YAML.stringify(compressed_header);
 
 	// construct document
