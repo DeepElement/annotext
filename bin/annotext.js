@@ -102,6 +102,7 @@ annotext.prototype.parse = function(annotextDoc, expandHeader) {
 // CREATE
 annotext.prototype.create = function(content, userKey, revisionKey) {
 	var result = "";
+	var created = moment();
 
 	// tokenize
 	var lexer = new Lexer(this.options);
@@ -110,13 +111,13 @@ annotext.prototype.create = function(content, userKey, revisionKey) {
 	// create json header
 	var nativeObject = {
 		annotations: [],
-		created: moment().toISOString()
+		created: created.toISOString()
 	};
 
 	var token_native = {
 		range_start: tokens[0].index,
 		range_end: tokens[tokens.length - 1].index,
-		created: moment().toISOString(),
+		created: created.toISOString(),
 		user: userKey,
 		revision: revisionKey
 	};
@@ -139,6 +140,7 @@ annotext.prototype.create = function(content, userKey, revisionKey) {
 annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionKey) {
 	var header = "";
 	var doc = annotext.prototype.parse(annotextDoc, true);
+	var created = moment();
 
 	var lexer = new Lexer(this.options);
 	var tokens = lexer.lex(doc.content);
@@ -174,7 +176,7 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 				diff_tokens.forEach(function(token) {
 					var token_native = {
 						index: tokens[0].index,
-						created: moment().toISOString(),
+						created: created.toISOString(),
 						user: userKey,
 						revision: revisionKey
 					};
@@ -190,7 +192,7 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 
 	var native_refactored_header = {
 		annotations: [],
-		created: moment().toISOString()
+		created: created.toISOString()
 	};
 	for (var i = 0; i <= token_attributions.length - 1; i++) {
 		var ta = token_attributions[i];
@@ -225,9 +227,10 @@ annotext.prototype.updateByDiffMatchPatches = function(diffMatchPatches, annotex
 
 function compress_yaml_header(header) {
 	var start = moment();
+	var created = moment();
 	var new_header = {
 		annotations: [],
-		created: moment().toISOString()
+		created: created.toISOString()
 	};
 
 	var p = 0;
