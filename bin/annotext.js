@@ -1,8 +1,8 @@
 var Lexer = require('../lib/lexer'),
-	YAML = require('yamljs'),
-	fs = require('fs'),
-	moment = require('moment'),
-	diff_match_patch = require('googlediff');
+YAML = require('yamljs'),
+fs = require('fs'),
+moment = require('moment'),
+diff_match_patch = require('googlediff');
 
 var YAML_SEPERATOR = "---\n";
 
@@ -100,7 +100,7 @@ annotext.prototype.parse = function(annotextDoc, expandHeader) {
 }
 
 // CREATE
-annotext.prototype.create = function(content, userKey, revisionKey) {
+annotext.prototype.create = function(content, userKey, revisionKey, parentRevisionKey) {
 	var result = "";
 	var created = moment();
 
@@ -113,6 +113,10 @@ annotext.prototype.create = function(content, userKey, revisionKey) {
 		annotations: [],
 		created: created.toISOString()
 	};
+
+	if (parentRevisionKey != undefined && parentRevisionKey != null) {
+		nativeObject.parentRevisionKey = parentRevisionKey;
+	}
 
 	var token_native = {
 		range_start: tokens[0].index,
@@ -158,8 +162,8 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 
 		switch (diff[0]) {
 			case -1: // Removing
-				current_idx += diff_tokens.length;
-				break;
+			current_idx += diff_tokens.length;
+			break;
 			case 0: // Stays the Same
 				// TODO: conslidate based on REGEX for sequence
 				diff_tokens.forEach(function(token) {
@@ -173,20 +177,20 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 				break;
 			case 1: // Adding
 
-				diff_tokens.forEach(function(token) {
-					var token_native = {
-						index: tokens[0].index,
-						created: created.toISOString(),
-						user: userKey,
-						revision: revisionKey
-					};
+			diff_tokens.forEach(function(token) {
+				var token_native = {
+					index: tokens[0].index,
+					created: created.toISOString(),
+					user: userKey,
+					revision: revisionKey
+				};
 
-					token_attributions.push({
-						token: token,
-						header: token_native
-					})
-				});
-				break;
+				token_attributions.push({
+					token: token,
+					header: token_native
+				})
+			});
+			break;
 		}
 	}
 
@@ -245,17 +249,17 @@ function compress_yaml_header(header) {
 				header.annotations[i]['revision'] ==
 				header.annotations[base_range]['revision']) {
 				end_range = i;
-			} else {
-				break;
-			}
+		} else {
+			break;
 		}
+	}
 
-		var token_native = {};
-		for (var key in header.annotations[base_range]) {
-			if (key != 'index')
-				token_native[key] = header.annotations[base_range][key];
-		}
-		if (base_range == end_range) {
+	var token_native = {};
+	for (var key in header.annotations[base_range]) {
+		if (key != 'index')
+			token_native[key] = header.annotations[base_range][key];
+	}
+	if (base_range == end_range) {
 			// single record
 			token_native.index = base_range;
 		} else {

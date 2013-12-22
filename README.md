@@ -63,7 +63,7 @@
 
 #API
 ##Create
-Create an AnnoText document without any historical versions of the document.
+Create an AnnoText document without any historical versions of the document. 
 
 **Usage**
 
@@ -72,9 +72,10 @@ Create an AnnoText document without any historical versions of the document.
 	
 	// create a basic document
 	var annoTextDoc = annotextDocumentProcessor.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');		
+					'Here is some sample content', // Content
+					'toddpi314', // User key
+					'v0.1',  // Current Revision
+					'v0.0'); // Parent revision optional		
 
 ##Update
 Update an existing document with the changed content. 
