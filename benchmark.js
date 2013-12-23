@@ -1,5 +1,5 @@
 /*require('nodetime').profile({
-	accountKey: '',
+	accountKey: '491d918f4e25e7e0205d98ef999d0025d1c55786',
 	appName: 'Node.js Application',
 	debug: true
 });*/

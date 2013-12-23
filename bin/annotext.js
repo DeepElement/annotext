@@ -142,13 +142,11 @@ annotext.prototype.create = function(content, userKey, revisionKey, parentRevisi
 };
 
 // UPDATE
-annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionKey) {
-	var start = moment();
-
+annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionKey, editDateTime) {
 	var header = "";
 	var doc = annotext.prototype.parse(annotextDoc, true);
 
-	var created = moment();
+	var created = editDateTime != null ? moment(editDateTime) : moment();
 	var createdISO = created.toISOString();
 
 	var dmp = new diff_match_patch();
@@ -208,8 +206,6 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	result += refactored_header;
 	result += YAML_SEPERATOR;
 	result += newContent;
-
-	var end = moment();
 
 	return result;
 };

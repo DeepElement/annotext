@@ -77,6 +77,13 @@ Create an AnnoText document without any historical versions of the document.
 ##Update
 Update an existing document with the changed content. 
 
+_Arguments_
+	- newContent - updated document content
+	- annotextDoc - pre-existing annotext document
+	- userKey - user key of editor
+	- revisionKey - revision key of new revision
+	- (Optional) editDateTime - DateTime of the edit
+
 **Usage**
 
 	var annotext = new (require('annotext'))();
