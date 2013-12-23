@@ -101,9 +101,9 @@ annotext.prototype.parse = function(annotextDoc, expandHeader) {
 }
 
 // CREATE
-annotext.prototype.create = function(content, userKey, revisionKey, parentRevisionKey) {
+annotext.prototype.create = function(content, userKey, revisionKey, parentRevisionKey, createDateTime) {
 	var result = "";
-	var created = moment();
+	var created = createDateTime != null ? moment(createDateTime) : moment();
 	var createdISO = created.toISOString();
 
 	// tokenize

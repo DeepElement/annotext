@@ -63,6 +63,13 @@
 ##Create
 Create an AnnoText document without any historical versions of the document. 
 
+_Arguments_
+	- content - document content
+	- userKey - user key of creator
+	- revisionKey - revision key of first impression
+	- (Optional) parentRevisionKey - revision key of parent if derived
+	- (Optional) createDateTime
+
 **Usage**
 
 	var annotext = new (require('annotext'))();
