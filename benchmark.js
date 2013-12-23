@@ -1,16 +1,20 @@
+/*require('nodetime').profile({
+	accountKey: '',
+	appName: 'Node.js Application',
+	debug: true
+});*/
+
 var sampleRepository = require('./test/samples/samples-provider'),
 	async = require('async'),
 	annotext = new(require('./bin/annotext'))(),
-	uuid = require('uuid');
+	uuid = require('uuid'),
+	fs = require('fs');
 
 var elapsed_time = function(note) {
 	var precision = 3; // 3 decimal places
 	var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
 	console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
 }
-
-// start the benchmark
-var start = process.hrtime();
 
 sampleRepository.getAllSampleFileNames(function(err, files) {
 	var contents = [];
@@ -26,7 +30,17 @@ sampleRepository.getAllSampleFileNames(function(err, files) {
 			});
 		},
 		function(err) {
-			runBenchmark(contents);
+
+			var currentStep = 0;
+			setInterval(function() {
+				currentStep++;
+				if (currentStep < 10) {
+					console.log((10 - currentStep) + "...");
+				}
+				if (currentStep == 10) {
+					runBenchmark(contents);
+				}
+			}, 1000);
 		});
 });
 
@@ -35,12 +49,11 @@ var runBenchmark = function(contents) {
 	operators.forEach(function(operatorRecord) {
 		var elapsedRecords = [];
 		contents.forEach(function(content) {
-			//var start = process.hrtime();
 			var start = Date.now();
-			operatorRecord.delegate(content);
-			var end = Date.now();
 
-			//var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
+			operatorRecord.delegate(content);
+
+			var end = Date.now();
 			var elapsed = end - start;
 
 			console.log("\t" + operatorRecord.name + ": " + elapsed.toFixed(3) + " ms, size=" + content.length + " normalized=" + (elapsed / content.length).toFixed(5) + " ms");
@@ -69,7 +82,7 @@ var runBenchmark = function(contents) {
 	delegateRuntimes.reverse();
 
 	console.log('============= Benchmark Report ===============');
-	delegateRuntimes.forEach(function(b){
+	delegateRuntimes.forEach(function(b) {
 		console.log(b.record.name + " - " + b.average + " ms");
 	});
 	console.log('==============================================');

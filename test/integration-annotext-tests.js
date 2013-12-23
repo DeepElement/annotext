@@ -6,7 +6,6 @@ annotext = require('../bin/annotext'),
 diff_match_patch = require('googlediff');
 
 describe('AnnoText Integration tests', function() {
-
 	describe('api.updateByDiffMatchPatches', function() {
 		var samples = {}
 
@@ -314,7 +313,7 @@ describe('api.getDistinctRevisions', function() {
 				user_key, revision_key);
 
 			var results = annotext_instance.getDistinctRevisions(textAnnotateDoc, true);
-			results.length.should.equal(sample.length);
+			results.length.should.equal(1);
 		}
 		done();
 	});

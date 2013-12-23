@@ -41,6 +41,7 @@ describe('AnnoText Unit tests', function() {
 		it('revision indexes correct', function(done) {
 			var user_key = uuid.v4();
 			var revision_key = uuid.v4();
+			var update_revision_key = uuid.v4();
 			var annotext_instance = new annotext({
 				user_placeholder: uuid.v4(),
 				revision_placeholder: uuid.v4()
@@ -58,7 +59,7 @@ describe('AnnoText Unit tests', function() {
 				patches,
 				textAnnotateDoc,
 				user_key,
-				revision_key);
+				update_revision_key);
 
 			var parsed = annotext_instance.parse(updated_doc);
 

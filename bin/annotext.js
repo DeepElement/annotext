@@ -1,8 +1,7 @@
-var Lexer = require('../lib/lexer'),
-YAML = require('yamljs'),
-fs = require('fs'),
-moment = require('moment'),
-diff_match_patch = require('googlediff');
+var YAML = require('yamljs'),
+	fs = require('fs'),
+	moment = require('moment'),
+	diff_match_patch = require('googlediff');
 
 var YAML_SEPERATOR = "---\n";
 
@@ -25,8 +24,8 @@ annotext.prototype.getRevisionsByUser = function(annotextDoc, userKey) {
 	return results;
 }
 
-annotext.prototype.getDistinctRevisions = function(annotextDoc, expanded) {
-	var doc = annotext.prototype.parse(annotextDoc, expanded);
+annotext.prototype.getDistinctRevisions = function(annotextDoc) {
+	var doc = annotext.prototype.parse(annotextDoc);
 	doc.header.annotations.sort(function(a, b) {
 		return moment(a['created']).diff(moment(b['created']));
 	});
@@ -83,9 +82,11 @@ annotext.prototype.parse = function(annotextDoc, expandHeader) {
 	var content = annotextDoc.substr(header.length + 2 * YAML_SEPERATOR.length,
 		annotextDoc.length);
 
+
 	var yaml_header;
 	try {
 		yaml_header = YAML.parse(header);
+
 		if (expandHeader) {
 			yaml_header = expand_yaml_header(yaml_header);
 		}
@@ -103,15 +104,15 @@ annotext.prototype.parse = function(annotextDoc, expandHeader) {
 annotext.prototype.create = function(content, userKey, revisionKey, parentRevisionKey) {
 	var result = "";
 	var created = moment();
+	var createdISO = created.toISOString();
 
 	// tokenize
-	var lexer = new Lexer(this.options);
-	var tokens = lexer.lex(content);
+	var contentLength = content.length;
 
 	// create json header
 	var nativeObject = {
 		annotations: [],
-		created: created.toISOString()
+		created: createdISO
 	};
 
 	if (parentRevisionKey != undefined && parentRevisionKey != null) {
@@ -119,9 +120,9 @@ annotext.prototype.create = function(content, userKey, revisionKey, parentRevisi
 	}
 
 	var token_native = {
-		range_start: tokens[0].index,
-		range_end: tokens[tokens.length - 1].index,
-		created: created.toISOString(),
+		range_start: 0,
+		range_end: contentLength - 1,
+		created: createdISO,
 		user: userKey,
 		revision: revisionKey
 	};
@@ -142,12 +143,13 @@ annotext.prototype.create = function(content, userKey, revisionKey, parentRevisi
 
 // UPDATE
 annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionKey) {
+	var start = moment();
+
 	var header = "";
 	var doc = annotext.prototype.parse(annotextDoc, true);
-	var created = moment();
 
-	var lexer = new Lexer(this.options);
-	var tokens = lexer.lex(doc.content);
+	var created = moment();
+	var createdISO = created.toISOString();
 
 	var dmp = new diff_match_patch();
 	var diffs = dmp.diff_main(doc.content, newContent);
@@ -156,44 +158,37 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	var token_attributions = [];
 	for (var i = 0; i <= diffs.length - 1; i++) {
 		var diff = diffs[i];
-
-		var lexer = new Lexer(this.options);
-		var diff_tokens = lexer.lex(diff[1]);
+		var contentLength = diff[1].length;
 
 		switch (diff[0]) {
 			case -1: // Removing
-			current_idx += diff_tokens.length;
-			break;
+				current_idx += contentLength;
+				break;
 			case 0: // Stays the Same
 				// TODO: conslidate based on REGEX for sequence
-				diff_tokens.forEach(function(token) {
+				for (var m = 0; m <= contentLength - 1; m++) {
 					var header_record = doc.header.annotations[current_idx];
 					token_attributions.push({
-						token: token,
 						header: header_record
 					})
 					current_idx++;
-				});
+				}
 				break;
 			case 1: // Adding
+				for (var m = 0; m <= contentLength - 1; m++) {
+					var token_native = {
+						created: createdISO,
+						user: userKey,
+						revision: revisionKey
+					};
 
-			diff_tokens.forEach(function(token) {
-				var token_native = {
-					index: tokens[0].index,
-					created: created.toISOString(),
-					user: userKey,
-					revision: revisionKey
+					token_attributions.push({
+						header: token_native
+					})
 				};
-
-				token_attributions.push({
-					token: token,
-					header: token_native
-				})
-			});
-			break;
+				break;
 		}
 	}
-
 	var native_refactored_header = {
 		annotations: [],
 		created: created.toISOString()
@@ -205,7 +200,6 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	}
 
 	var compressed_header = compress_yaml_header(native_refactored_header);
-
 	var refactored_header = YAML.stringify(compressed_header);
 
 	// construct document
@@ -214,6 +208,8 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	result += refactored_header;
 	result += YAML_SEPERATOR;
 	result += newContent;
+
+	var end = moment();
 
 	return result;
 };
@@ -249,17 +245,17 @@ function compress_yaml_header(header) {
 				header.annotations[i]['revision'] ==
 				header.annotations[base_range]['revision']) {
 				end_range = i;
-		} else {
-			break;
+			} else {
+				break;
+			}
 		}
-	}
 
-	var token_native = {};
-	for (var key in header.annotations[base_range]) {
-		if (key != 'index')
-			token_native[key] = header.annotations[base_range][key];
-	}
-	if (base_range == end_range) {
+		var token_native = {};
+		for (var key in header.annotations[base_range]) {
+			if (key != 'index')
+				token_native[key] = header.annotations[base_range][key];
+		}
+		if (base_range == end_range) {
 			// single record
 			token_native.index = base_range;
 		} else {
@@ -293,19 +289,30 @@ function expand_yaml_header(header) {
 	header.annotations.forEach(function(annotation) {
 		if (annotation.range_start != null) {
 			for (var i = annotation.range_start; i <= annotation.range_end; i++) {
-				var new_annotation = {};
+				new_annotation = clone(annotation);
 				new_annotation.index = i;
-				for (var key in annotation) {
-					if (key != 'range_start' && key != 'range_end')
-						new_annotation[key] = annotation[key];
-				}
 				new_header.annotations.push(new_annotation);
 			}
 		} else {
 			new_header.annotations.push(annotation);
 		}
 	});
+
 	return new_header;
+}
+
+function clone(x) {
+	if (x === null || x === undefined)
+		return x;
+	if (x.clone)
+		return x.clone();
+	if (x.constructor == Array) {
+		var r = [];
+		for (var i = 0, n = x.length; i < n; i++)
+			r.push(clone(x[i]));
+		return r;
+	}
+	return x;
 }
 
 // export the class
