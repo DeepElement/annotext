@@ -28,7 +28,12 @@
 
     <div class="container">
       <section id="main_content">
-        <h2>
+        <h1>
+<a name="annotext" class="anchor" href="#annotext"><span class="octicon octicon-link"></span></a>AnnoText</h1>
+
+<p>A document-based attribution engine for <a href="http://nodejs.org">node</a>.</p>
+
+<h2>
 <a name="philosophy" class="anchor" href="#philosophy"><span class="octicon octicon-link"></span></a>Philosophy</h2>
 
 <ul>
@@ -41,11 +46,10 @@
 <h2>
 <a name="create-a-document" class="anchor" href="#create-a-document"><span class="octicon octicon-link"></span></a>Create a Document</h2>
 
-<pre><code>var annotext = require('annotext');
-var annotextDocumentProcessor = new annotext();
+<pre><code>var annotext = new (require('annotext'))();
 
 // create a basic document
-var annoTextDoc = annotextDocumentProcessor.create(
+var annoTextDoc = annotext.create(
                 'Here is some sample content',
                 'toddpi314', 
                 'v0.1');            
@@ -64,16 +68,15 @@ Here is some sample content
 <h2>
 <a name="update-an-existing-document" class="anchor" href="#update-an-existing-document"><span class="octicon octicon-link"></span></a>Update an existing document</h2>
 
-<pre><code>var annotext = require('annotext');
-var annotextDocumentProcessor = new annotext();
+<pre><code>var annotext = new (require('annotext'))();
 
 // create a basic document
-var annoTextDoc = annotextDocumentProcessor.create(
+var annoTextDoc = annotext.create(
                 'Here is some sample content',
                 'toddpi314', 
                 'v0.1');
 
-var updatedDoc = annotextDocumentProcessor.update(
+var updatedDoc = annotext.update(
             'Here is some sample "that I added" content',
             annoTextDoc,
             'VictorHugo',
@@ -98,18 +101,18 @@ Here is some sample "that I added" content
 <h2>
 <a name="create" class="anchor" href="#create"><span class="octicon octicon-link"></span></a>Create</h2>
 
-<p>Create an AnnoText document without any historical versions of the document.</p>
+<p>Create an AnnoText document without any historical versions of the document. </p>
 
 <p><strong>Usage</strong></p>
 
-<pre><code>var annotext = require('annotext');
-var annotextDocumentProcessor = new annotext();
+<pre><code>var annotext = new (require('annotext'))();
 
 // create a basic document
-var annoTextDoc = annotextDocumentProcessor.create(
-                'Here is some sample content',
-                'toddpi314', 
-                'v0.1');        
+var annoTextDoc = annotext.create(
+                'Here is some sample content', // Content
+                'toddpi314', // User key
+                'v0.1',  // Current Revision
+                'v0.0'); // Parent revision optional        
 </code></pre>
 
 <h2>
@@ -119,20 +122,37 @@ var annoTextDoc = annotextDocumentProcessor.create(
 
 <p><strong>Usage</strong></p>
 
-<pre><code>var annotext = require('annotext');
-var annotextDocumentProcessor = new annotext();
+<pre><code>var annotext = new (require('annotext'))();
 
 // create a basic document
-var annoTextDoc = annotextDocumentProcessor.create(
+var annoTextDoc = annotext.create(
                 'Here is some sample content',
                 'toddpi314', 
                 'v0.1');
 
-var updatedDoc = annotextDocumentProcessor.update(
+var updatedDoc = annotext.update(
             'Here is some sample "that I added" content',
             annoTextDoc,
             'VictorHugo',
             'v0.2');
+</code></pre>
+
+<h2>
+<a name="parse" class="anchor" href="#parse"><span class="octicon octicon-link"></span></a>Parse</h2>
+
+<p>Parse an existing document and get a pretty "ok" api for accessing header/content.</p>
+
+<p><strong>Usage</strong></p>
+
+<pre><code>var annotext = new (require('annotext'))();
+
+// create a basic document
+var annoTextDoc = annotext.create(
+                'Here is some sample content',
+                'toddpi314', 
+                'v0.1');
+
+var parsedDoc = annotext.parse(annoTextDoc);
 </code></pre>
 
 <h2>
@@ -142,17 +162,16 @@ var updatedDoc = annotextDocumentProcessor.update(
 
 <p><strong>Usage</strong></p>
 
-<pre><code>var annotext = require('annotext');
-var annotextDocumentProcessor = new annotext();
+<pre><code>var annotext = new (require('annotext'))();
 
 // create a basic document
-var annoTextDoc = annotextDocumentProcessor.create(
+var annoTextDoc = annotext.create(
                 'Here is some sample content',
                 'toddpi314', 
                 'v0.1');
 
 // returns array of user keys
-var users = annotextDocumentProcessor.getRevisionsByUser(annoTextDoc)
+var users = annotext.getRevisionsByUser(annoTextDoc)
 </code></pre>
 
 <h2>
@@ -162,17 +181,16 @@ var users = annotextDocumentProcessor.getRevisionsByUser(annoTextDoc)
 
 <p><strong>Usage</strong></p>
 
-<pre><code>var annotext = require('annotext');
-var annotextDocumentProcessor = new annotext();
+<pre><code>var annotext = new (require('annotext'))();
 
 // create a basic document
-var annoTextDoc = annotextDocumentProcessor.create(
+var annoTextDoc = annotext.create(
                 'Here is some sample content',
                 'toddpi314', 
                 'v0.1');
 
 // returns array of dates
-var dates = annotextDocumentProcessor.getDistinctRevisionDates(annoTextDoc)
+var dates = annotext.getDistinctRevisionDates(annoTextDoc)
 </code></pre>
 
 <h2>
@@ -182,17 +200,16 @@ var dates = annotextDocumentProcessor.getDistinctRevisionDates(annoTextDoc)
 
 <p><strong>Usage</strong></p>
 
-<pre><code>var annotext = require('annotext');
-var annotextDocumentProcessor = new annotext();
+<pre><code>var annotext = new (require('annotext'))();
 
 // create a basic document
-var annoTextDoc = annotextDocumentProcessor.create(
+var annoTextDoc = annotext.create(
                 'Here is some sample content',
                 'toddpi314', 
                 'v0.1');
 
 // returns array of revision Keys
-var revisionKeys = annotextDocumentProcessor.getDistinctRevisionKeys(annoTextDoc)
+var revisionKeys = annotext.getDistinctRevisionKeys(annoTextDoc)
 </code></pre>
 
 <h2>
@@ -202,17 +219,16 @@ var revisionKeys = annotextDocumentProcessor.getDistinctRevisionKeys(annoTextDoc
 
 <p><strong>Usage</strong></p>
 
-<pre><code>var annotext = require('annotext');
-var annotextDocumentProcessor = new annotext();
+<pre><code>var annotext = new (require('annotext'))();
 
 // create a basic document
-var annoTextDoc = annotextDocumentProcessor.create(
+var annoTextDoc = annotext.create(
                 'Here is some sample content',
                 'toddpi314', 
                 'v0.1');
 
 // returns array of revision Keys
-var userKeys = annotextDocumentProcessor.getDistinctUserKeys(annoTextDoc)
+var userKeys = annotext.getDistinctUserKeys(annoTextDoc)
 </code></pre>
 
 <h2>
@@ -223,17 +239,16 @@ Revisions contain </p>
 
 <p><strong>Usage</strong></p>
 
-<pre><code>var annotext = require('annotext');
-var annotextDocumentProcessor = new annotext();
+<pre><code>var annotext = new (require('annotext'))();
 
 // create a basic document
-var annoTextDoc = annotextDocumentProcessor.create(
+var annoTextDoc = annotext.create(
                 'Here is some sample content',
                 'toddpi314', 
                 'v0.1');
 
 // returns array of revisions
-var revisions = annotextDocumentProcessor.getDistinctRevisions(annoTextDoc)
+var revisions = annotext.getDistinctRevisions(annoTextDoc)
 </code></pre>
 
 <h1>
