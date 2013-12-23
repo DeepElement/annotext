@@ -3,7 +3,7 @@
   "name": "annotext",
   "private": false,
   "description": "A attribution engine for NodeJS",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "repository": {
     "url": "https://github.com/DeepElement/AnnoText.git"
     },
@@ -17,8 +17,7 @@
         "string": "*",
         "yamljs": "*",
         "moment" : "2.4.0",
-        "googlediff": "*",
-        "v8-profiler" : "*"
+        "googlediff": "*"
         },
         "devDependencies": {
           "should": "*"
