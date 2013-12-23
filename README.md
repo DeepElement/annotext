@@ -14,11 +14,10 @@
 
 ##Create a Document
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content',
 					'toddpi314', 
 					'v0.1');			
@@ -34,16 +33,15 @@
 
 ##Update an existing document
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content',
 					'toddpi314', 
 					'v0.1');
 					
-	var updatedDoc = annotextDocumentProcessor.update(
+	var updatedDoc = annotext.update(
 				'Here is some sample "that I added" content',
 				annoTextDoc,
 				'VictorHugo',
@@ -67,11 +65,10 @@ Create an AnnoText document without any historical versions of the document.
 
 **Usage**
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content', // Content
 					'toddpi314', // User key
 					'v0.1',  // Current Revision
@@ -82,16 +79,15 @@ Update an existing document with the changed content.
 
 **Usage**
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content',
 					'toddpi314', 
 					'v0.1');
 					
-	var updatedDoc = annotextDocumentProcessor.update(
+	var updatedDoc = annotext.update(
 				'Here is some sample "that I added" content',
 				annoTextDoc,
 				'VictorHugo',
@@ -103,16 +99,15 @@ Parse an existing document and get a pretty "ok" api for accessing header/conten
 
 **Usage**
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content',
 					'toddpi314', 
 					'v0.1');
 					
-	var parsedDoc = annotextDocumentProcessor.parse(annoTextDoc);
+	var parsedDoc = annotext.parse(annoTextDoc);
 
 
 
@@ -121,17 +116,16 @@ Get a list of revisions based on the user key used in prior attribution entries.
 
 **Usage**
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content',
 					'toddpi314', 
 					'v0.1');
 					
 	// returns array of user keys
-	var users = annotextDocumentProcessor.getRevisionsByUser(annoTextDoc)
+	var users = annotext.getRevisionsByUser(annoTextDoc)
 
 
 ##GetDistinctRevisionDates
@@ -139,51 +133,48 @@ Get a list of all revision dates relevant to the AnnoText document.
 
 **Usage**
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content',
 					'toddpi314', 
 					'v0.1');
 					
 	// returns array of dates
-	var dates = annotextDocumentProcessor.getDistinctRevisionDates(annoTextDoc)
+	var dates = annotext.getDistinctRevisionDates(annoTextDoc)
 
 ##GetDistinctRevisionKeys
 Get a list of distinct revision keys relevant to the AnnoText document.
 
 **Usage**
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content',
 					'toddpi314', 
 					'v0.1');
 					
 	// returns array of revision Keys
-	var revisionKeys = annotextDocumentProcessor.getDistinctRevisionKeys(annoTextDoc)
+	var revisionKeys = annotext.getDistinctRevisionKeys(annoTextDoc)
 
 ##GetDistinctUserKeys
 Get a list of distinct user keys relevant to the AnnoText document.
 
 **Usage**
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content',
 					'toddpi314', 
 					'v0.1');
 					
 	// returns array of revision Keys
-	var userKeys = annotextDocumentProcessor.getDistinctUserKeys(annoTextDoc)
+	var userKeys = annotext.getDistinctUserKeys(annoTextDoc)
 
 ##GetDistinctRevisions
 Get a list of distinct revisions relevant to the AnnoText document.
@@ -191,17 +182,16 @@ Revisions contain
 
 **Usage**
 
-	var annotext = require('annotext');
-	var annotextDocumentProcessor = new annotext();
+	var annotext = new (require('annotext'))();
 	
 	// create a basic document
-	var annoTextDoc = annotextDocumentProcessor.create(
+	var annoTextDoc = annotext.create(
 					'Here is some sample content',
 					'toddpi314', 
 					'v0.1');
 					
 	// returns array of revisions
-	var revisions = annotextDocumentProcessor.getDistinctRevisions(annoTextDoc)
+	var revisions = annotext.getDistinctRevisions(annoTextDoc)
 
 #Contact & Issues
 
