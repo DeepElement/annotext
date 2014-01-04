@@ -308,6 +308,7 @@ describe('AnnoText Unit tests', function() {
 				doc,
 				crazyUserKey,
 				revisionKey,
+				null,
 				revisionDateTime);
 
 			var stripped = updateContent.replace(revisionDateTimeIso, '');

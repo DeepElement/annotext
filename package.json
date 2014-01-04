@@ -17,7 +17,8 @@
         "string": "*",
         "yamljs": "*",
         "moment" : "2.4.0",
-        "googlediff": "*"
+        "googlediff": "*",
+        "underscore" : "*"
         },
         "devDependencies": {
           "should": "*"

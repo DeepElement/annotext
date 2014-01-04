@@ -1,7 +1,8 @@
 var YAML = require('yamljs'),
 	fs = require('fs'),
 	moment = require('moment'),
-	diff_match_patch = require('googlediff');
+	diff_match_patch = require('googlediff'),
+	_ = require('underscore');
 
 var YAML_SEPERATOR = "---\n";
 
@@ -101,7 +102,7 @@ annotext.prototype.parse = function(annotextDoc, expandHeader) {
 }
 
 // CREATE
-annotext.prototype.create = function(content, userKey, revisionKey, parentRevisionKey, createDateTime) {
+annotext.prototype.create = function(content, userKey, revisionKey, parentRevisionKey, customData, createDateTime) {
 	var result = "";
 	var created = createDateTime != null ? moment(createDateTime) : moment();
 	var createdISO = created.toISOString();
@@ -114,6 +115,9 @@ annotext.prototype.create = function(content, userKey, revisionKey, parentRevisi
 		annotations: [],
 		created: createdISO
 	};
+
+	if (customData)
+		_.extend(nativeObject, customData);
 
 	if (parentRevisionKey != undefined && parentRevisionKey != null) {
 		nativeObject.parentRevisionKey = parentRevisionKey;
@@ -142,7 +146,7 @@ annotext.prototype.create = function(content, userKey, revisionKey, parentRevisi
 };
 
 // UPDATE
-annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionKey, editDateTime) {
+annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionKey, customData, editDateTime) {
 	var header = "";
 	var doc = annotext.prototype.parse(annotextDoc, true);
 
@@ -166,6 +170,8 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 				// TODO: conslidate based on REGEX for sequence
 				for (var m = 0; m <= contentLength - 1; m++) {
 					var header_record = doc.header.annotations[current_idx];
+					if (customData)
+						_.extend(header_record, customData);
 					token_attributions.push({
 						header: header_record
 					})
@@ -179,6 +185,9 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 						user: userKey,
 						revision: revisionKey
 					};
+
+					if (customData)
+						_.extend(token_native, customData);
 
 					token_attributions.push({
 						header: token_native
