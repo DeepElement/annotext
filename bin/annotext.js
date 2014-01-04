@@ -243,16 +243,19 @@ function compress_yaml_header(header) {
 		var base_range = p;
 		var end_range = base_range;
 		for (var i = p; i <= header.annotations.length - 1; i++) {
-			if (header.annotations[i]['user'] ==
-				header.annotations[base_range]['user'] &&
-				header.annotations[i]['created'] ==
-				header.annotations[base_range]['created'] &&
-				header.annotations[i]['revision'] ==
-				header.annotations[base_range]['revision']) {
-				end_range = i;
-			} else {
-				break;
+			var allEqual = header.annotations[i].length == header.annotations[base_range].length;
+		
+			for (var attrKey in header.annotations[i]) {
+				if (header.annotations[i][attrKey] !=
+					header.annotations[base_range][attrKey]) {
+					allEqual = false;
+				}
 			}
+
+			if(allEqual)
+				end_range = i;
+			else
+				break;
 		}
 
 		var token_native = {};
