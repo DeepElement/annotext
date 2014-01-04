@@ -152,6 +152,30 @@ describe('AnnoText Unit tests', function() {
 
 			done();
 		});
+
+		it('custom creation data', function(done) {
+			var user_key = uuid.v4();
+			var revision_key = uuid.v4();
+			var parentRevision_key = uuid.v4();
+			var annotext_instance = new annotext({
+				user_placeholder: uuid.v4(),
+				revision_placeholder: uuid.v4()
+			});
+			var customData = {
+				go: 'ninja-go'
+			};
+			var dmp = new diff_match_patch();
+			var sampleContent = "mmmm";
+
+			var textAnnotateDoc = annotext_instance.create(sampleContent,
+				user_key, revision_key, parentRevision_key, customData);
+
+			var parsedDoc = annotext_instance.parse(textAnnotateDoc);
+			parsedDoc.header.parentRevisionKey.should.equal(parentRevision_key);
+			parsedDoc.header.go.should.equal('ninja-go');
+
+			done();
+		});
 	});
 
 	describe('api.updateByDiffMatchPatches', function() {
