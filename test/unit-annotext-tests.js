@@ -1,10 +1,9 @@
 'use strict';
 
-
 var should = require('should'),
+util = require('./test'),
 uuid = require('uuid'),
 async = require('async'),
-samplesProvider = require('./samples/samples-provider'),
 annotext = require('../bin/annotext'),
 diff_match_patch = require('googlediff'),
 moment = require('moment');
