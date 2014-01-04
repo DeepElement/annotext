@@ -219,15 +219,12 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	return result;
 };
 
-annotext.prototype.updateByDiffMatchPatches = function(diffMatchPatches, annotextDoc, userKey, revisionKey) {
+annotext.prototype.updateByDiffMatchPatches = function(diffMatchPatches, annotextDoc, userKey, revisionKey, customData, editDateTime) {
 	var doc = annotext.prototype.parse(annotextDoc, true);
 	var dmp = new diff_match_patch();
 
 	var patchedContentContext = dmp.patch_apply(diffMatchPatches, doc.content);
-	return annotext.prototype.update(patchedContentContext[0],
-		annotextDoc,
-		userKey,
-		revisionKey);
+	return annotext.prototype.update(patchedContentContext[0], annotextDoc, userKey, revisionKey, customData, editDateTime);
 };
 
 function compress_yaml_header(header) {
@@ -244,7 +241,7 @@ function compress_yaml_header(header) {
 		var end_range = base_range;
 		for (var i = p; i <= header.annotations.length - 1; i++) {
 			var allEqual = header.annotations[i].length == header.annotations[base_range].length;
-		
+
 			for (var attrKey in header.annotations[i]) {
 				if (header.annotations[i][attrKey] !=
 					header.annotations[base_range][attrKey]) {
@@ -252,7 +249,7 @@ function compress_yaml_header(header) {
 				}
 			}
 
-			if(allEqual)
+			if (allEqual)
 				end_range = i;
 			else
 				break;
