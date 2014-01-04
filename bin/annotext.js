@@ -167,11 +167,8 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 				current_idx += contentLength;
 				break;
 			case 0: // Stays the Same
-				// TODO: conslidate based on REGEX for sequence
 				for (var m = 0; m <= contentLength - 1; m++) {
 					var header_record = doc.header.annotations[current_idx];
-					if (customData)
-						_.extend(header_record, customData);
 					token_attributions.push({
 						header: header_record
 					})
