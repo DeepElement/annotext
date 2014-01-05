@@ -51,3 +51,31 @@ exports.loadSamples = function(data, callback) {
 			return callback(null, samples);
 		});
 }
+
+exports.groupFilesByName = function(files) {
+	var nameKey = {};
+	var results = [];
+
+	files.forEach(function(file) {
+		var idxExtension = file.name.lastIndexOf('.');
+		var name = file.name.substr(0, idxExtension);
+		var extension = file.name.substr(idxExtension+1, file.name.length - 1);
+
+		if (nameKey[name] == null)
+			nameKey[name] = {};
+
+		switch (extension) {
+			case "html":
+			nameKey[name].html = file.data;
+			break;
+			case "text":
+			nameKey[name].markdown = file.data;
+			break;
+		}
+	});
+
+	for(var key in nameKey)
+		results.push(nameKey[key]);
+
+	return results;
+}

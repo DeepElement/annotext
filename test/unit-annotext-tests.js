@@ -363,7 +363,7 @@ describe('update', function() {
 		var crazyUserKey = "toddpi314";
 		var revisionKey = uuid.v4() + " " + uuid.v4();
 		var revisionDateTime = new Date();
-		var revisionDateTimeIso = moment(revisionDateTime).toISOString();
+		var revisionDateTimeIso = new moment(revisionDateTime).toISOString();
 
 		var updateContent = annotextDocumentProcessor.update(
 			newContent,

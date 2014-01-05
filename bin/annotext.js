@@ -11,6 +11,16 @@ var annotext = function(options) {
 	this.options = options || {};
 }
 
+annotext.prototype.exportToHtml = function(annotextDoc, options, callback) {
+	// TODO: Support options
+	var marked = require('../lib/marked');
+	var parsed = annotext.prototype.parse(annotextDoc);
+	new marked(parsed.content,
+		annotextDoc,
+		null,
+		callback);
+}
+
 // class methods
 annotext.prototype.getRevisionsByUser = function(annotextDoc, userKey) {
 	var doc = annotext.prototype.parse(annotextDoc);
@@ -20,7 +30,7 @@ annotext.prototype.getRevisionsByUser = function(annotextDoc, userKey) {
 			results.push(a);
 	});
 	results.sort(function(a, b) {
-		return moment(a['created']).diff(moment(b['created']));
+		return new moment(a['created']).diff(new moment(b['created']));
 	});
 	return results;
 }
@@ -28,7 +38,7 @@ annotext.prototype.getRevisionsByUser = function(annotextDoc, userKey) {
 annotext.prototype.getDistinctRevisions = function(annotextDoc) {
 	var doc = annotext.prototype.parse(annotextDoc);
 	doc.header.annotations.sort(function(a, b) {
-		return moment(a['created']).diff(moment(b['created']));
+		return new moment(a['created']).diff(new moment(b['created']));
 	});
 	return doc.header.annotations;
 }
@@ -41,7 +51,7 @@ annotext.prototype.getDistinctUserKeys = function(annotextDoc) {
 			results.push(a['user']);
 	});
 	results.sort(function(a, b) {
-		return moment(a['created']).diff(moment(b['created']));
+		return new moment(a['created']).diff(new moment(b['created']));
 	});
 	return results;
 }
@@ -54,7 +64,7 @@ annotext.prototype.getDistinctRevisionKeys = function(annotextDoc) {
 			results.push(a['revision']);
 	});
 	results.sort(function(a, b) {
-		return moment(a['created']).diff(moment(b['created']));
+		return new moment(a['created']).diff(new moment(b['created']));
 	});
 	return results;
 }
@@ -67,7 +77,7 @@ annotext.prototype.getDistinctRevisionDates = function(annotextDoc) {
 			results.push(a['created']);
 	});
 	results.sort(function(a, b) {
-		return moment(a['created']).diff(moment(b['created']));
+		return new moment(a['created']).diff(new moment(b['created']));
 	});
 	return results;
 }
@@ -104,7 +114,7 @@ annotext.prototype.parse = function(annotextDoc, expandHeader) {
 // CREATE
 annotext.prototype.create = function(content, userKey, revisionKey, parentRevisionKey, customData, createDateTime) {
 	var result = "";
-	var created = createDateTime != null ? moment(createDateTime) : moment();
+	var created = createDateTime != null ? new moment(createDateTime) : moment();
 	var createdISO = created.toISOString();
 
 	// tokenize
@@ -150,7 +160,7 @@ annotext.prototype.update = function(newContent, annotextDoc, userKey, revisionK
 	var header = "";
 	var doc = annotext.prototype.parse(annotextDoc, true);
 
-	var created = editDateTime != null ? moment(editDateTime) : moment();
+	var created = editDateTime != null ? new moment(editDateTime) : new moment();
 	var createdISO = created.toISOString();
 
 	var dmp = new diff_match_patch();
@@ -225,8 +235,8 @@ annotext.prototype.updateByDiffMatchPatches = function(diffMatchPatches, annotex
 };
 
 function compress_yaml_header(header) {
-	var start = moment();
-	var created = moment();
+	var start = new moment();
+	var created = new moment();
 	var new_header = {
 		annotations: [],
 		created: created.toISOString()

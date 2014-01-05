@@ -13,6 +13,64 @@ var sampleFolders = [
 ];
 
 describe('AnnoText Integration tests', function() {
+	describe('api.exportToHtml', function() {
+		var samplesWithoutAttribution, samplesWithAttribution;
+
+		beforeEach(function(done) {
+			var nonAttributionSamplesFolder = path.join(__dirname, "/samples/export_html_without_attribution");
+			var attributionSamplesFolder = path.join(__dirname, "/samples/export_html_with_attribution");
+
+			util.loadSamples(nonAttributionSamplesFolder,
+				function(err, resp) {
+					samplesWithoutAttribution = util.groupFilesByName(resp);
+					util.loadSamples(attributionSamplesFolder,
+						function(err, resp) {
+							samplesWithAttribution = util.groupFilesByName(resp);
+							done(err);
+						});
+				});
+		});
+
+		it('Standard case - with single user attribution', function(done) {
+			var userKey = 'd8eb9a26-cb9c-4342-8548-6d6f5750a914';
+			var revisionKey = '4e183537-8b5d-48b4-9905-52b8e2d60686';
+			var revisionDateTime = new moment('2013-12-23T14:33:52.761Z').toDate();
+
+
+			async.eachSeries(samplesWithAttribution,
+				function(sample, sample_callback) {
+					var annotext_instance = new annotext({
+						user_placeholder: uuid.v4(),
+						revision_placeholder: uuid.v4()
+					});
+
+					var annoTextDoc = annotext_instance.create(
+						sample.markdown,
+						userKey,
+						revisionKey,
+						null, // parentRevisionKey
+						null,
+						revisionDateTime);
+
+					annotext_instance.exportToHtml(annoTextDoc,
+						null,
+						function(err, htmlExport) {
+							var exportClean = cleanseContent(htmlExport.replace(/\n/g, '<LF>'));
+							var sampleClean = cleanseContent(sample.html.replace(/\n/g, '<LF>'));
+							exportClean.trim().should.equal(sampleClean.trim());
+							sample_callback();
+						});
+				},
+				function(err) {
+					done(err);
+				});
+		});
+	});
+	var cleanseContent = function(src) {
+		src = src.replace(/(\<LF\>)+/g, "<LF>");
+		return src;
+	}
+
 	describe('api.updateByDiffMatchPatches', function() {
 		var samples = {}
 
