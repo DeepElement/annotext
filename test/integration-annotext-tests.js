@@ -33,7 +33,7 @@ describe('AnnoText Integration tests', function() {
 		
 		it("Force Fail", 
 		function(done){
-			1.should.equal(2);
+			"todd".should.equal("ted");
 			done();
 		});
 
