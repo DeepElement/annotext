@@ -30,6 +30,12 @@ describe('AnnoText Integration tests', function() {
 						});
 				});
 		});
+		
+		it("Force Fail", 
+		function(done){
+			1.should.equal(2);
+			done();
+		});
 
 		it('Standard case - with single user attribution', function(done) {
 			var userKey = 'd8eb9a26-cb9c-4342-8548-6d6f5750a914';
