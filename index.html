@@ -33,6 +33,8 @@
 
 <p>A document-based attribution engine for <a href="http://nodejs.org">node</a>.</p>
 
+<p><a href="https://travis-ci.org/DeepElement/AnnoText"><img src="https://travis-ci.org/DeepElement/AnnoText.png?branch=master" alt="Build Status"></a></p>
+
 <h2>
 <a name="philosophy" class="anchor" href="#philosophy"><span class="octicon octicon-link"></span></a>Philosophy</h2>
 
@@ -103,6 +105,13 @@ Here is some sample "that I added" content
 
 <p>Create an AnnoText document without any historical versions of the document. </p>
 
+<p><em>Arguments</em>
+    - content - document content
+    - userKey - user key of creator
+    - revisionKey - revision key of first impression
+    - (Optional) parentRevisionKey - revision key of parent if derived
+    - (Optional) createDateTime</p>
+
 <p><strong>Usage</strong></p>
 
 <pre><code>var annotext = new (require('annotext'))();
@@ -119,6 +128,13 @@ var annoTextDoc = annotext.create(
 <a name="update" class="anchor" href="#update"><span class="octicon octicon-link"></span></a>Update</h2>
 
 <p>Update an existing document with the changed content. </p>
+
+<p><em>Arguments</em>
+    - newContent - updated document content
+    - annotextDoc - pre-existing annotext document
+    - userKey - user key of editor
+    - revisionKey - revision key of new revision
+    - (Optional) editDateTime - DateTime of the edit</p>
 
 <p><strong>Usage</strong></p>
 
