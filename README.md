@@ -2,6 +2,8 @@
 
   A document-based attribution engine for [node](http://nodejs.org).
 
+[![Build Status](https://travis-ci.org/DeepElement/AnnoText.png?branch=master)](https://travis-ci.org/DeepElement/AnnoText)
+
 
 ##Philosophy
 
