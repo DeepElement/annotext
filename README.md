@@ -3,17 +3,17 @@
   A document-based attribution engine for various languages ([node](http://nodejs.org)). 
 
 
-##Philosophy
+#Philosophy
 
 * The Content itself drives the Version history
 * Human & Machine readable YAML storage of document attributions
 * Fully serializable (Momento)
 
 
-## Node
-### Usage
+# Node
+## Usage
 
-####Create a Document
+###Create a Document
 
 	var annotext = new (require('annotext'))();
 	
@@ -32,7 +32,7 @@
 	---
 	Here is some sample content
 
-####Update an existing document
+###Update an existing document
 
 	var annotext = new (require('annotext'))();
 	
@@ -60,8 +60,8 @@
 	---
 	Here is some sample "that I added" content
 
-###API
-####Create
+##API
+###Create
 Create an AnnoText document without any historical versions of the document. 
 
 _Arguments_
@@ -82,7 +82,7 @@ _Arguments_
 					'v0.1',  // Current Revision
 					'v0.0'); // Parent revision optional		
 
-####Update
+###Update
 Update an existing document with the changed content. 
 
 _Arguments_
@@ -109,7 +109,7 @@ _Arguments_
 				'v0.2');
 
 
-####Parse
+###Parse
 Parse an existing document and get a pretty "ok" api for accessing header/content.
 
 **Usage**
@@ -126,7 +126,7 @@ Parse an existing document and get a pretty "ok" api for accessing header/conten
 
 
 
-####GetRevisionsByUser
+###GetRevisionsByUser
 Get a list of revisions based on the user key used in prior attribution entries.
 
 **Usage**
@@ -143,7 +143,7 @@ Get a list of revisions based on the user key used in prior attribution entries.
 	var users = annotext.getRevisionsByUser(annoTextDoc)
 
 
-####GetDistinctRevisionDates
+###GetDistinctRevisionDates
 Get a list of all revision dates relevant to the AnnoText document.
 
 **Usage**
@@ -159,7 +159,7 @@ Get a list of all revision dates relevant to the AnnoText document.
 	// returns array of dates
 	var dates = annotext.getDistinctRevisionDates(annoTextDoc)
 
-####GetDistinctRevisionKeys
+###GetDistinctRevisionKeys
 Get a list of distinct revision keys relevant to the AnnoText document.
 
 **Usage**
@@ -175,7 +175,7 @@ Get a list of distinct revision keys relevant to the AnnoText document.
 	// returns array of revision Keys
 	var revisionKeys = annotext.getDistinctRevisionKeys(annoTextDoc)
 
-####GetDistinctUserKeys
+###GetDistinctUserKeys
 Get a list of distinct user keys relevant to the AnnoText document.
 
 **Usage**
@@ -191,7 +191,7 @@ Get a list of distinct user keys relevant to the AnnoText document.
 	// returns array of revision Keys
 	var userKeys = annotext.getDistinctUserKeys(annoTextDoc)
 
-####GetDistinctRevisions
+###GetDistinctRevisions
 Get a list of distinct revisions relevant to the AnnoText document.
 Revisions contain 
 
@@ -208,13 +208,13 @@ Revisions contain
 	// returns array of revisions
 	var revisions = annotext.getDistinctRevisions(annoTextDoc)
 
-##Contact & Issues
+#Contact & Issues
 
 Issues: https://github.com/DeepElement/AnnoText/issues
 
 or,<todd@deepelement.com>
 
-## License
+# License
 
 (The MIT License)
 
