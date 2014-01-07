@@ -8,9 +8,9 @@
     "url": "https://github.com/DeepElement/AnnoText.git"
   },
   "bin": {
-    "annotext": "./bin/annotext.js"
+    "annotext": "./node/bin/annotext.js"
   },
-  "main": "./bin/annotext",
+  "main": "./node/bin/annotext",
   "dependencies": {
     "async": "0.2.9",
     "uuid": "1.4.1",
