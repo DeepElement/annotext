@@ -29,6 +29,6 @@
     
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --timeout 99999 --ui bdd --reporter spec node/test"
   }
 }
