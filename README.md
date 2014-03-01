@@ -1,4 +1,4 @@
-#AnnoText [![Build Status](https://travis-ci.org/DeepElement/AnnoText.png?branch=master)](https://travis-ci.org/DeepElement/AnnoText)
+#AnnoText [![Build Status](https://travis-ci.org/DeepElement/AnnoText.png?branch=master)](https://travis-ci.org/DeepElement/AnnoText) [![npm status](https://nodei.co/npm/annotext.png?compact=true)](https://nodei.co/npm/annotext.png?compact=true)
 
   A document-based attribution engine for various languages ([node](http://nodejs.org)). 
 
