@@ -27,6 +27,6 @@
     "mocha" : "1.21.4"
   },
   "scripts": {
-    "test": "mocha --timeout 99999 --ui bdd --reporter spec node/test"
+    "test": "mocha --timeout 99999 --ui bdd --reporter spec test"
   }
 }
