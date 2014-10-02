@@ -3,7 +3,7 @@
   "name": "annotext",
   "private": false,
   "description": "A attribution engine for NodeJS",
-  "version": "0.17.0",
+  "version": "1.0.0",
   "repository": {
     "url": "https://github.com/DeepElement/AnnoText.git"
   },
@@ -18,15 +18,13 @@
     "yamljs": "0.1.4",
     "moment": "2.4.0",
     "googlediff": "0.1.0",
-    "underscore": "1.5.2"
+    "underscore": "1.5.2",
+    "yaml-front-matter": "3.0.1"
   },
   "devDependencies": {
     "should": "2.1.1",
     "assert": "1.1.0",
-    "mocha" : "*"
-  },
-  "optionalDependencies": {
-    
+    "mocha" : "1.21.4"
   },
   "scripts": {
     "test": "mocha --timeout 99999 --ui bdd --reporter spec node/test"

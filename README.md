@@ -1,7 +1,10 @@
-#AnnoText [![Build Status](https://travis-ci.org/DeepElement/AnnoText.png?branch=master)](https://travis-ci.org/DeepElement/AnnoText) [![npm status](https://nodei.co/npm/annotext.png?compact=true)](https://nodei.co/npm/annotext.png?compact=true)
+<img src="http://www.deepelement.com/img/logos/de/de_logo.ico" height="30"> Annotext Attribution Format
+---
 
-  A document-based attribution engine for various languages ([node](http://nodejs.org)). 
+  A document-based attribution engine for [NodeJS](http://nodejs.org). 
 
+
+ [![Build Status](https://travis-ci.org/DeepElement/AnnoText.png?branch=master)](https://travis-ci.org/DeepElement/AnnoText) [![npm status](https://nodei.co/npm/annotext.png?compact=true)](https://nodei.co/npm/annotext.png?compact=true)
 
 #Philosophy
 
@@ -15,13 +18,13 @@
 
 ###Create a Document
 
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');			
+	var annotextDoc = new annotext();
+	annotextDoc.update(
+			{
+				content: 'Here is some sample content',
+				user_key: 'toddpi314', 
+				revision_key: 'v0.1'
+			});			
 
 **AnnoText**
 
@@ -34,19 +37,19 @@
 
 ###Update an existing document
 
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');
-					
-	var updatedDoc = annotext.update(
-				'Here is some sample "that I added" content',
-				annoTextDoc,
-				'VictorHugo',
-				'v0.2');
+	var annotextDoc = new annotext();
+	annotextDoc.update(
+				{
+					content: 'Here is some sample content',
+					user_key: 'toddpi314', 
+					revision_key: 'v0.1'
+				});
+	annotextDoc.update(
+				{
+					content: 'Here is some sample "that I added" content',
+					user_key: 'VictorHugo',
+					revision_key: 'v0.2'
+				});
 		
 
 **AnnoText**
@@ -61,68 +64,45 @@
 	Here is some sample "that I added" content
 
 ##API
-###Create
-Create an AnnoText document without any historical versions of the document. 
-
-_Arguments_
-	- content - document content
-	- userKey - user key of creator
-	- revisionKey - revision key of first impression
-	- (Optional) parentRevisionKey - revision key of parent if derived
-	- (Optional) createDateTime
-
-**Usage**
-
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content', // Content
-					'toddpi314', // User key
-					'v0.1',  // Current Revision
-					'v0.0'); // Parent revision optional		
-
 ###Update
-Update an existing document with the changed content. 
+Add content to the document (creation and update)
 
-_Arguments_
-	- newContent - updated document content
-	- annotextDoc - pre-existing annotext document
-	- userKey - user key of editor
-	- revisionKey - revision key of new revision
-	- (Optional) editDateTime - DateTime of the edit
+**Arguments**
+
+- content - document content
+- user_key - user key of creator
+- revision_key - revision key of first impression
+- (Optional) inline_custom - custom attributes to attach to the annotation record
+- (Optional) inline_header - custom attributes to attach to the document header
+- (Optional) edit_date - datestamp for the revision updates
 
 **Usage**
 
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');
-					
-	var updatedDoc = annotext.update(
-				'Here is some sample "that I added" content',
-				annoTextDoc,
-				'VictorHugo',
-				'v0.2');
-
+	var annotextDoc = new annotext();
+	annotextDoc.update(
+			{
+				content: 'Here is some sample content', // Content
+				user_key: 'toddpi314', // User key
+				revision_key: 'v0.1',  // Current Revision
+				inline_custom: {
+					'go': 'ninja'				},
+				header_custom: {
+					'custom': 'header-value'					});
+				
 
 ###Parse
 Parse an existing document and get a pretty "ok" api for accessing header/content.
 
 **Usage**
 
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');
-					
-	var parsedDoc = annotext.parse(annoTextDoc);
+	var annotextDoc = new annotext();
+	var annotextDoc = annotext.update(
+		{
+			content: 'Here is some sample content',
+			user_key: 'toddpi314',
+			revision_key: 'v0.1'		
+		});
+	var parsedDoc = annotextDoc.parse();
 
 
 
@@ -131,16 +111,14 @@ Get a list of revisions based on the user key used in prior attribution entries.
 
 **Usage**
 
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');
-					
-	// returns array of user keys
-	var users = annotext.getRevisionsByUser(annoTextDoc)
+	var annotextDoc = new annotext();
+	var annotextDoc = annotext.update(
+		{
+			content: 'Here is some sample content',
+			user_key: 'toddpi314',
+			revision_key: 'v0.1'		
+		});
+	var revisions = annotextDoc.getRevisionsByUser();
 
 
 ###GetDistinctRevisionDates
@@ -148,71 +126,49 @@ Get a list of all revision dates relevant to the AnnoText document.
 
 **Usage**
 
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');
-					
-	// returns array of dates
-	var dates = annotext.getDistinctRevisionDates(annoTextDoc)
+	var annotextDoc = new annotext();
+	var annotextDoc = annotext.update(
+		{
+			content: 'Here is some sample content',
+			user_key: 'toddpi314',
+			revision_key: 'v0.1'		
+		});
+	var dates = annotextDoc.getDistinctRevisionDates();
 
 ###GetDistinctRevisionKeys
 Get a list of distinct revision keys relevant to the AnnoText document.
 
 **Usage**
 
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');
-					
-	// returns array of revision Keys
-	var revisionKeys = annotext.getDistinctRevisionKeys(annoTextDoc)
+	var annotextDoc = new annotext();
+	var annotextDoc = annotext.update(
+		{
+			content: 'Here is some sample content',
+			user_key: 'toddpi314',
+			revision_key: 'v0.1'		
+		});
+	var revisionKey = annotextDoc.getDistinctRevisionKeys();
 
 ###GetDistinctUserKeys
 Get a list of distinct user keys relevant to the AnnoText document.
 
 **Usage**
 
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');
-					
-	// returns array of revision Keys
-	var userKeys = annotext.getDistinctUserKeys(annoTextDoc)
+	var annotextDoc = new annotext();
+	var annoTextDoc = annotext.update(
+		{
+			content: 'Here is some sample content',
+			user_key: 'toddpi314',
+			revision_key: 'v0.1'		
+		});
+	var users = annotextDoc.getDistinctUserKeys();
 
-###GetDistinctRevisions
-Get a list of distinct revisions relevant to the AnnoText document.
-Revisions contain 
-
-**Usage**
-
-	var annotext = new (require('annotext'))();
-	
-	// create a basic document
-	var annoTextDoc = annotext.create(
-					'Here is some sample content',
-					'toddpi314', 
-					'v0.1');
-					
-	// returns array of revisions
-	var revisions = annotext.getDistinctRevisions(annoTextDoc)
 
 #Contact & Issues
 
-Issues: https://github.com/DeepElement/AnnoText/issues
+[https://github.com/DeepElement/AnnoText/issues](https://github.com/DeepElement/AnnoText/issues) 
 
-or,<todd@deepelement.com>
+<todd@deepelement.com>
 
 # License
 
